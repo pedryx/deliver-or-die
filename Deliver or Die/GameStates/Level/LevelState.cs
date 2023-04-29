@@ -2,6 +2,9 @@
 
 using HypEcs;
 
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
+
 namespace DeliverOrDie.GameStates.Level;
 /// <summary>
 /// Game state with main gameplay.
@@ -34,5 +37,7 @@ internal class LevelState : GameState
         Entity player = factory.CreatePlayer();
 
         Camera.Target = player;
+
+        Game.SoundManager["AmbientNatureOutside"].PlayLoop();
     }
 }

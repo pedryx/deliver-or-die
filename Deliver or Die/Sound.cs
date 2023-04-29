@@ -40,6 +40,15 @@ internal class Sound
         }
     }
 
+    public void PlayLoop(float volume = 1.0f)
+    {
+        var instance = effect.CreateInstance();
+        instance.IsLooped = true;
+        instance.Volume = volume;
+
+        instance.Play();
+    }
+
     public static Sound FromFile(string path)
     {
         var sound = new Sound();
