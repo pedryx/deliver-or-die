@@ -43,5 +43,63 @@ internal static class Animations
                 "survivor-idle_rifle_18",
                 "survivor-idle_rifle_19",
             }, textures);
+
+        public static List<AnimationFrame> Move { get; private set; }
+            = AnimationFactory.CreateImagesAnimation(new List<string>()
+            {
+                "survivor-move_rifle_0",
+                "survivor-move_rifle_1",
+                "survivor-move_rifle_2",
+                "survivor-move_rifle_3",
+                "survivor-move_rifle_4",
+                "survivor-move_rifle_5",
+                "survivor-move_rifle_6",
+                "survivor-move_rifle_7",
+                "survivor-move_rifle_8",
+                "survivor-move_rifle_9",
+                "survivor-move_rifle_10",
+                "survivor-move_rifle_11",
+                "survivor-move_rifle_12",
+                "survivor-move_rifle_13",
+                "survivor-move_rifle_14",
+                "survivor-move_rifle_15",
+                "survivor-move_rifle_16",
+                "survivor-move_rifle_17",
+                "survivor-move_rifle_18",
+                "survivor-move_rifle_19",
+            }, textures);
+
+        public static List<AnimationFrame> Reload { get; private set; }
+            = AnimationFactory.CreateImagesAnimation(new List<string>()
+            {
+                "survivor-reload_rifle_0",
+                "survivor-reload_rifle_1",
+                "survivor-reload_rifle_2",
+                "survivor-reload_rifle_3",
+                "survivor-reload_rifle_4",
+                "survivor-reload_rifle_5",
+                "survivor-reload_rifle_6",
+                "survivor-reload_rifle_7",
+                "survivor-reload_rifle_8",
+                "survivor-reload_rifle_9",
+                "survivor-reload_rifle_10",
+                "survivor-reload_rifle_11",
+                "survivor-reload_rifle_12",
+                "survivor-reload_rifle_13",
+                "survivor-reload_rifle_14",
+                "survivor-reload_rifle_15",
+                "survivor-reload_rifle_16",
+                "survivor-reload_rifle_17",
+                "survivor-reload_rifle_18",
+                "survivor-reload_rifle_19",
+            }, textures);
+
+        public static List<AnimationFrame> Shoot { get; private set; }
+            = AnimationFactory.CreateImagesAnimation(new List<string>()
+            {
+                "survivor-shoot_rifle_0",
+                "survivor-shoot_rifle_1",
+                "survivor-shoot_rifle_2",
+            }, textures);
     }
 }
