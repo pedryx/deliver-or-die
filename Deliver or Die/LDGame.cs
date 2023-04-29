@@ -45,6 +45,7 @@ internal class LDGame : Game
     {
         TextureManager = new TextureManager(GraphicsDevice);
         SpriteBatch = new SpriteBatch(GraphicsDevice);
+        Animations.Initialize(TextureManager);
         ActiveState.Initialize(this);
 
         base.LoadContent();

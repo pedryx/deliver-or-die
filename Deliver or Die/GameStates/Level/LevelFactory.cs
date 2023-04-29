@@ -3,9 +3,11 @@
 using HypEcs;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace DeliverOrDie.GameStates.Level;
+/// <summary>
+/// Factory for creating entities for <see cref="LevelState"/>.
+/// </summary>
 internal class LevelFactory
 {
     private readonly World ecsWorld;
@@ -48,6 +50,11 @@ internal class LevelFactory
             .Add(new PlayerControl()
             {
                 Speed = 500.0f,
+            })
+            .Add(new Animation()
+            {
+                TimePerFrame = 0.08f,
+                Frames = Animations.Player.Idle,
             })
             .Id();
 

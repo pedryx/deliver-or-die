@@ -2,9 +2,10 @@
 
 using HypEcs;
 
-using Microsoft.Xna.Framework;
-
 namespace DeliverOrDie.GameStates.Level;
+/// <summary>
+/// Game state with main gameplay.
+/// </summary>
 internal class LevelState : GameState
 {
     protected override void Initialize()
@@ -19,6 +20,7 @@ internal class LevelState : GameState
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this))
             .Add(new MovementSystem(this))
+            .Add(new AnimationSystem(this))
         ;
         RenderSystems
             .Add(new RenderSystem(this))
