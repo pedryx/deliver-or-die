@@ -11,8 +11,11 @@ namespace DeliverOrDie.GameStates.Level;
 /// </summary>
 internal class LevelState : GameState
 {
+    private LevelFactory factory;
+
     protected override void Initialize()
     {
+        factory = new LevelFactory(this);
         CreateSystems();
         CreateEntities();
     }
@@ -21,7 +24,7 @@ internal class LevelState : GameState
     {
         UpdateSystems
             .Add(new CameraControlSystem(this))
-            .Add(new PlayerControlSystem(this))
+            .Add(new PlayerControlSystem(this, factory))
             .Add(new MovementSystem(this))
             .Add(new AnimationSystem(this))
         ;
@@ -32,8 +35,6 @@ internal class LevelState : GameState
 
     private void CreateEntities()
     {
-        LevelFactory factory = new(this);
-
         Entity player = factory.CreatePlayer();
 
         Camera.Target = player;

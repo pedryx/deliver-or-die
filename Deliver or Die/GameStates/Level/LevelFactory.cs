@@ -36,6 +36,27 @@ internal class LevelFactory
         return square;
     }
 
+    public Entity CreateBullet(Vector2 position, float direction)
+    {
+        Entity bullet = ecsWorld.Spawn()
+            .Add(Transform.Create(position))
+            .Add(new Appearance()
+            {
+                Texture = textures.Square,
+                Color = Color.Black,
+                ScaleOffset = 3.0f,
+                Origin = new Vector2(0.5f),
+            })
+            .Add(new Movement()
+            {
+                Speed = 3000.0f,
+                Direction = direction,
+            })
+            .Id();
+
+        return bullet;
+    }
+
     public Entity CreatePlayer()
     {
         Entity player = ecsWorld.Spawn()

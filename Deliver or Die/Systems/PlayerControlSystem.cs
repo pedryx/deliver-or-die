@@ -1,9 +1,9 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.GameStates.Level;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 
 using System;
 using System.IO;
@@ -22,6 +22,11 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
     private const Keys reloadKey = Keys.R;
     private const Keys debugKey = Keys.F3;
 
+    private const float bulletDirectionOffset = 0.4f;
+    private const float bulletPositionOffset = 40.0f;
+
+    private readonly LevelFactory factory;
+
     /// <summary>
     /// Determine if movement occur during last frame.
     /// </summary>
@@ -29,8 +34,11 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
     private MouseState lastMouseState;
     private KeyboardState lastKeyboardState;
 
-    public PlayerControlSystem(GameState gameState)
-        : base(gameState) { }
+    public PlayerControlSystem(GameState gameState, LevelFactory factory)
+        : base(gameState) 
+    {
+        this.factory = factory;
+    }
 
     protected override void Update(ref Transform transform, ref Animation animation, ref PlayerControl playerControl)
     {
@@ -62,6 +70,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
             animation.Frames = Animations.Player.Idle;
 
         Vector2 lookDirection = mouseState.Position.ToVector2() - GameState.Game.Resolution / 2;
+        lookDirection.Normalize();
         transform.Rotation = MathF.Atan2(lookDirection.Y, lookDirection.X);
 
         if (playerControl.Shooting)
@@ -107,7 +116,13 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
                     animation.FrameIndex = 0;
                 playerControl.Shooting = true;
                 GameState.Game.SoundManager["lmg_fire01"].Play(0.5f);
-                // TODO: actually fire ammo
+                
+                float spawnDirectionAngle = transform.Rotation + bulletDirectionOffset;
+                Vector2 spawnDirection = new Vector2(MathF.Cos(spawnDirectionAngle), MathF.Sin(spawnDirectionAngle));
+                Vector2 spawnPosition = transform.Position + spawnDirection * bulletPositionOffset;
+
+                factory.CreateBullet(spawnPosition, transform.Rotation);
+                // TODO: descrease ammo
             }
         }
 
