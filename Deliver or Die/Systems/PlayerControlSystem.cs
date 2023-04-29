@@ -1,9 +1,13 @@
 ﻿using DeliverOrDie.Components;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 using System;
+using System.IO;
+using System.Linq;
 
 namespace DeliverOrDie.Systems;
 /// <summary>
@@ -16,6 +20,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
     private const Keys downKey  = Keys.S;
     private const Keys rightKey = Keys.D;
     private const Keys reloadKey = Keys.R;
+    private const Keys debugKey = Keys.F3;
 
     /// <summary>
     /// Determine if movement occur during last frame.
@@ -44,7 +49,10 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
         bool currentMovement = movementdirection != Vector2.Zero;
 
         if (currentMovement)
+        {
             movementdirection.Normalize();
+            SoundSequences.Player.Walk.Play(0.3f);
+        }
 
         transform.Position += movementdirection * playerControl.MoveSpeed * GameState.Elapsed * GameState.Game.Speed;
 
@@ -89,6 +97,8 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
                 animation.FrameIndex = 0;
                 animation.TimePerFrame = playerControl.ReloadTime / animation.Frames.Count;
                 playerControl.Reloading = true;
+
+                GameState.Game.SoundManager["assaultriflereload1"].Play(0.4f);
             }
             else if (mouseState.LeftButton == ButtonState.Pressed && !playerControl.Shooting)
             {
@@ -96,12 +106,34 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
                 if (animation.FrameIndex >= animation.Frames.Count)
                     animation.FrameIndex = 0;
                 playerControl.Shooting = true;
+                GameState.Game.SoundManager["lmg_fire01"].Play(0.5f);
                 // TODO: actually fire ammo
             }
         }
 
+        if (lastKeyboardState.IsKeyUp(debugKey) && keyboardState.IsKeyDown(debugKey))
+            Debug();
+
         lastMovement = currentMovement;
         lastMouseState = mouseState;
         lastKeyboardState = keyboardState;
+    }
+
+    /// <summary>
+    /// Simple debug action which is invoked when <see cref="debugKey"/> has been pressed.
+    /// </summary>
+    private void Debug()
+    {
+        string file = Directory.GetFiles("Content/Sounds", "Footstep_Dirt_00.wav", SearchOption.AllDirectories).First();
+        
+        /*
+        var song = Song.FromUri("song", new Uri(file, UriKind.Relative));
+        MediaPlayer.Play(song);
+        */
+
+        
+        var effect = SoundEffect.FromFile(file);
+        effect.Play();
+        
     }
 }

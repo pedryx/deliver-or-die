@@ -25,6 +25,7 @@ internal class LDGame : Game
     public GraphicsDeviceManager Graphics { get; private set; }
     public SpriteBatch SpriteBatch { get; private set; }
     public TextureManager TextureManager { get; private set; }
+    public SoundManager SoundManager { get; private set; } = new();
 
     /// <summary>
     /// Width and height of game window.
@@ -45,7 +46,9 @@ internal class LDGame : Game
     {
         TextureManager = new TextureManager(GraphicsDevice);
         SpriteBatch = new SpriteBatch(GraphicsDevice);
+
         Animations.Initialize(TextureManager);
+        SoundSequences.Initialize(SoundManager);
         ActiveState.Initialize(this);
 
         base.LoadContent();
