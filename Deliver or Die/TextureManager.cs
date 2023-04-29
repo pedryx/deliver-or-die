@@ -40,7 +40,7 @@ public class TextureManager
                 string file = Directory.GetFiles
                 (
                     contentFolder,
-                    $"{key}.png",
+                    $"{key}.*",
                     SearchOption.AllDirectories
                 ).First();
 
