@@ -9,7 +9,7 @@ internal class SoundSequences
     private static SoundManager sounds;
 
     /// <summary>
-    /// Asociate this class with instance of sound manager.
+    /// Associate this class with instance of sound manager.
     /// </summary>
     public static void Initialize(SoundManager sounds)
     {

@@ -46,7 +46,7 @@ internal class GameState
         Elapsed = elapsed;
      
         UpdateSystems.Run(ECSWorld);
-        Camera.Update(ECSWorld);
+        Camera.Update();
     }
 
     public void Draw(float elapsed)

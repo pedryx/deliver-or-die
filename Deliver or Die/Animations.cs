@@ -9,7 +9,7 @@ internal static class Animations
     private static TextureManager textures;
 
     /// <summary>
-    /// Asociate this class with instance of texture manager.
+    /// Associate this class with instance of texture manager.
     /// </summary>
     /// <param name="textures"></param>
     public static void Initialize(TextureManager textures)

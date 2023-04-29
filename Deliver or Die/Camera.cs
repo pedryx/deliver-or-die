@@ -23,7 +23,7 @@ internal class Camera
         this.gameState = gameState;
     }
 
-    public void Update(World ecsWorld)
+    public void Update()
     {
         if (Target == null)
             return;

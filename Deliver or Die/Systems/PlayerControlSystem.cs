@@ -31,7 +31,6 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
     /// Determine if movement occur during last frame.
     /// </summary>
     private bool lastMovement;
-    private MouseState lastMouseState;
     private KeyboardState lastKeyboardState;
 
     public PlayerControlSystem(GameState gameState, LevelFactory factory)
@@ -45,24 +44,24 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
         KeyboardState keyboardState = Keyboard.GetState();
         MouseState mouseState = Mouse.GetState();
 
-        Vector2 movementdirection = new();
+        Vector2 movementDirection = new();
         if (keyboardState.IsKeyDown(upKey))
-            movementdirection += -Vector2.UnitY;
+            movementDirection += -Vector2.UnitY;
         if (keyboardState.IsKeyDown(leftKey))
-            movementdirection += -Vector2.UnitX;
+            movementDirection += -Vector2.UnitX;
         if (keyboardState.IsKeyDown(downKey))
-            movementdirection +=  Vector2.UnitY;
+            movementDirection +=  Vector2.UnitY;
         if (keyboardState.IsKeyDown(rightKey))
-            movementdirection +=  Vector2.UnitX;
-        bool currentMovement = movementdirection != Vector2.Zero;
+            movementDirection +=  Vector2.UnitX;
+        bool currentMovement = movementDirection != Vector2.Zero;
 
         if (currentMovement)
         {
-            movementdirection.Normalize();
+            movementDirection.Normalize();
             SoundSequences.Player.Walk.Play(0.3f);
         }
 
-        transform.Position += movementdirection * playerControl.MoveSpeed * GameState.Elapsed * GameState.Game.Speed;
+        transform.Position += movementDirection * playerControl.MoveSpeed * GameState.Elapsed * GameState.Game.Speed;
 
         if (currentMovement && !lastMovement)
             animation.Frames = Animations.Player.Move;
@@ -118,11 +117,11 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
                 GameState.Game.SoundManager["lmg_fire01"].Play(0.5f);
                 
                 float spawnDirectionAngle = transform.Rotation + bulletDirectionOffset;
-                Vector2 spawnDirection = new Vector2(MathF.Cos(spawnDirectionAngle), MathF.Sin(spawnDirectionAngle));
+                Vector2 spawnDirection = new(MathF.Cos(spawnDirectionAngle), MathF.Sin(spawnDirectionAngle));
                 Vector2 spawnPosition = transform.Position + spawnDirection * bulletPositionOffset;
 
                 factory.CreateBullet(spawnPosition, transform.Rotation);
-                // TODO: descrease ammo
+                // TODO: decrease ammo
             }
         }
 
@@ -130,14 +129,13 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
             Debug();
 
         lastMovement = currentMovement;
-        lastMouseState = mouseState;
         lastKeyboardState = keyboardState;
     }
 
     /// <summary>
     /// Simple debug action which is invoked when <see cref="debugKey"/> has been pressed.
     /// </summary>
-    private void Debug()
+    private static void Debug()
     {
         string file = Directory.GetFiles("Content/Sounds", "Footstep_Dirt_00.wav", SearchOption.AllDirectories).First();
         

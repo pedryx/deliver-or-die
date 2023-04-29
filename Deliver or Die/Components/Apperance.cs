@@ -41,7 +41,7 @@ public struct Appearance
         float scale = 1.0f,
         Rectangle? sourceRectangle = null
     )
-        => new Appearance()
+        => new()
         {
             Texture = texture,
             Color = Color.White,

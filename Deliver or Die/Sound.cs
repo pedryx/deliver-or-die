@@ -51,8 +51,10 @@ internal class Sound
 
     public static Sound FromFile(string path)
     {
-        var sound = new Sound();
-        sound.effect = SoundEffect.FromFile(path);
+        var sound = new Sound
+        {
+            effect = SoundEffect.FromFile(path)
+        };
 
         return sound;
     }

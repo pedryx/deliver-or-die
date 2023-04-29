@@ -20,7 +20,7 @@ public struct Transform
     public float Rotation;
 
     public static Transform Create(Vector2 position)
-        => new Transform()
+        => new()
         {
             Position = position,
             Scale = 1.0f,
