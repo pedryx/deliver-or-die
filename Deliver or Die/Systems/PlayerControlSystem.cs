@@ -108,20 +108,28 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
 
                 GameState.Game.SoundManager["assaultriflereload1"].Play(0.4f);
             }
-            else if (mouseState.LeftButton == ButtonState.Pressed && !player.Shooting && player.Ammo > 0)
+            else if (mouseState.LeftButton == ButtonState.Pressed && !player.Shooting)
             {
-                animation.Frames = Animations.Player.Shoot;
-                if (animation.FrameIndex >= animation.Frames.Count)
-                    animation.FrameIndex = 0;
-                player.Shooting = true;
-                GameState.Game.SoundManager["lmg_fire01"].Play(0.5f);
-                
-                float spawnDirectionAngle = transform.Rotation + bulletDirectionOffset;
-                Vector2 spawnDirection = new(MathF.Cos(spawnDirectionAngle), MathF.Sin(spawnDirectionAngle));
-                Vector2 spawnPosition = transform.Position + spawnDirection * bulletPositionOffset;
+                if (player.Ammo <= 0)
+                {
+                    GameState.Game.SoundManager["gun_fire2"].Play(0.4f, true, 0.1f);
+                }
+                else
+                {
 
-                factory.CreateBullet(spawnPosition, transform.Rotation);
-                player.Ammo--;
+                    animation.Frames = Animations.Player.Shoot;
+                    if (animation.FrameIndex >= animation.Frames.Count)
+                        animation.FrameIndex = 0;
+                    player.Shooting = true;
+                    GameState.Game.SoundManager["lmg_fire01"].Play(0.5f);
+
+                    float spawnDirectionAngle = transform.Rotation + bulletDirectionOffset;
+                    Vector2 spawnDirection = new(MathF.Cos(spawnDirectionAngle), MathF.Sin(spawnDirectionAngle));
+                    Vector2 spawnPosition = transform.Position + spawnDirection * bulletPositionOffset;
+
+                    factory.CreateBullet(spawnPosition, transform.Rotation);
+                    player.Ammo--;
+                }
             }
         }
 
