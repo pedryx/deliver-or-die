@@ -1,8 +1,11 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.Systems;
 
 using HypEcs;
 
 using Microsoft.Xna.Framework;
+
+using System.Threading;
 
 namespace DeliverOrDie.GameStates.Level;
 /// <summary>
@@ -12,11 +15,13 @@ internal class LevelFactory
 {
     private readonly World ecsWorld;
     private readonly TextureManager textures;
+    private readonly TimeToLiveSystem timeToLiveSystem;
 
-    public LevelFactory(GameState gameState)
+    public LevelFactory(LevelState levelState)
     {
-        ecsWorld = gameState.ECSWorld;
-        textures = gameState.Game.TextureManager;
+        ecsWorld = levelState.ECSWorld;
+        textures = levelState.Game.TextureManager;
+        timeToLiveSystem = levelState.TimeToLiveSystem;
     }
 
     public Entity CreateSquare(Vector2 position, float size, Color color, float layerDepth = 0.0f)
@@ -53,6 +58,7 @@ internal class LevelFactory
                 Direction = direction,
             })
             .Id();
+        timeToLiveSystem.Add(bullet, 5.0f);
 
         return bullet;
     }

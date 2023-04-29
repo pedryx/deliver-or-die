@@ -2,9 +2,6 @@
 
 using HypEcs;
 
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
-
 namespace DeliverOrDie.GameStates.Level;
 /// <summary>
 /// Game state with main gameplay.
@@ -13,9 +10,13 @@ internal class LevelState : GameState
 {
     private LevelFactory factory;
 
+    public TimeToLiveSystem TimeToLiveSystem { get; private set; }
+
     protected override void Initialize()
     {
+        TimeToLiveSystem = new TimeToLiveSystem(this);
         factory = new LevelFactory(this);
+
         CreateSystems();
         CreateEntities();
     }
@@ -27,6 +28,7 @@ internal class LevelState : GameState
             .Add(new PlayerControlSystem(this, factory))
             .Add(new MovementSystem(this))
             .Add(new AnimationSystem(this))
+            .Add(TimeToLiveSystem)
         ;
         RenderSystems
             .Add(new RenderSystem(this))
