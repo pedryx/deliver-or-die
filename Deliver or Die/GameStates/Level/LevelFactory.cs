@@ -74,7 +74,7 @@ internal class LevelFactory
                 Origin = new Vector2(90, 120),
                 Color = Color.White,
             })
-            .Add(new PlayerControl()
+            .Add(new Player()
             {
                 MoveSpeed = 500.0f,
                 ReloadTime = 2.0f,

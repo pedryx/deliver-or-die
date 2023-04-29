@@ -13,7 +13,7 @@ namespace DeliverOrDie.Systems;
 /// <summary>
 /// Handles control of player character.
 /// </summary>
-internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerControl>
+internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
 {
     private const Keys upKey    = Keys.W;
     private const Keys leftKey  = Keys.A;
@@ -39,7 +39,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
         this.factory = factory;
     }
 
-    protected override void Update(ref Transform transform, ref Animation animation, ref PlayerControl playerControl)
+    protected override void Update(ref Transform transform, ref Animation animation, ref Player player)
     {
         KeyboardState keyboardState = Keyboard.GetState();
         MouseState mouseState = Mouse.GetState();
@@ -61,7 +61,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
             SoundSequences.Player.Walk.Play(0.3f);
         }
 
-        transform.Position += movementDirection * playerControl.MoveSpeed * GameState.Elapsed * GameState.Game.Speed;
+        transform.Position += movementDirection * player.MoveSpeed * GameState.Elapsed * GameState.Game.Speed;
 
         if (currentMovement && !lastMovement)
             animation.Frames = Animations.Player.Move;
@@ -72,26 +72,26 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
         lookDirection.Normalize();
         transform.Rotation = MathF.Atan2(lookDirection.Y, lookDirection.X);
 
-        if (playerControl.Shooting)
+        if (player.Shooting)
         {
-            playerControl.ShootingElapsed += GameState.Elapsed * GameState.Game.Speed;
-            if (playerControl.ShootingElapsed >= 1.0f / playerControl.ShootingSpeed)
+            player.ShootingElapsed += GameState.Elapsed * GameState.Game.Speed;
+            if (player.ShootingElapsed >= 1.0f / player.ShootingSpeed)
             {
-                playerControl.ShootingElapsed = 0.0f;
-                playerControl.Shooting = false;
-                if (!playerControl.Reloading)
+                player.ShootingElapsed = 0.0f;
+                player.Shooting = false;
+                if (!player.Reloading)
                     animation.Frames = Animations.Player.Idle;
             }
         }
 
-        if (playerControl.Reloading)
+        if (player.Reloading)
         {
-            playerControl.ReloadingElapsed += GameState.Elapsed * GameState.Game.Speed;
-            if (playerControl.ReloadingElapsed >= playerControl.ReloadTime)
+            player.ReloadingElapsed += GameState.Elapsed * GameState.Game.Speed;
+            if (player.ReloadingElapsed >= player.ReloadTime)
             {
-                playerControl.ReloadingElapsed = 0.0f;
-                playerControl.Reloading = false;
-                animation.TimePerFrame = playerControl.AnimationTimePerFrame;
+                player.ReloadingElapsed = 0.0f;
+                player.Reloading = false;
+                animation.TimePerFrame = player.AnimationTimePerFrame;
                 animation.Frames = Animations.Player.Idle;
                 // TODO: actually reload ammo
             }
@@ -100,20 +100,20 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, PlayerCont
         {
             if (lastKeyboardState.IsKeyUp(reloadKey) && keyboardState.IsKeyDown(reloadKey))
             {
-                playerControl.AnimationTimePerFrame = animation.TimePerFrame;
+                player.AnimationTimePerFrame = animation.TimePerFrame;
                 animation.Frames = Animations.Player.Reload;
                 animation.FrameIndex = 0;
-                animation.TimePerFrame = playerControl.ReloadTime / animation.Frames.Count;
-                playerControl.Reloading = true;
+                animation.TimePerFrame = player.ReloadTime / animation.Frames.Count;
+                player.Reloading = true;
 
                 GameState.Game.SoundManager["assaultriflereload1"].Play(0.4f);
             }
-            else if (mouseState.LeftButton == ButtonState.Pressed && !playerControl.Shooting)
+            else if (mouseState.LeftButton == ButtonState.Pressed && !player.Shooting)
             {
                 animation.Frames = Animations.Player.Shoot;
                 if (animation.FrameIndex >= animation.Frames.Count)
                     animation.FrameIndex = 0;
-                playerControl.Shooting = true;
+                player.Shooting = true;
                 GameState.Game.SoundManager["lmg_fire01"].Play(0.5f);
                 
                 float spawnDirectionAngle = transform.Rotation + bulletDirectionOffset;

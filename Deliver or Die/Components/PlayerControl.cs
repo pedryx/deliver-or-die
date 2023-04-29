@@ -3,7 +3,7 @@
 /// <summary>
 /// Tag used for player controlled entity.
 /// </summary>
-internal struct PlayerControl
+internal struct Player
 {
     /// <summary>
     /// Speed of player movement in pixels per second.
