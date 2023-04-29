@@ -43,17 +43,19 @@ internal class LevelFactory
             .Add(new Appearance()
             {
                 Texture = textures["survivor-idle_rifle_0"],
-                ScaleOffset = 0.7f,
+                ScaleOffset = 0.5f,
                 Origin = new Vector2(90, 120),
                 Color = Color.White,
             })
             .Add(new PlayerControl()
             {
-                Speed = 500.0f,
+                MoveSpeed = 500.0f,
+                ReloadTime = 2.0f,
+                ShootingSpeed = 10,
             })
             .Add(new Animation()
             {
-                TimePerFrame = 0.08f,
+                TimePerFrame = 0.06f,
                 Frames = Animations.Player.Idle,
             })
             .Id();
