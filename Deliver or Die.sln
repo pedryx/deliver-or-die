@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deliver or Die", "Deliver or Die\Deliver or Die.csproj", "{F78AF80B-FBD4-4442-99BC-AD27E550EFE4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F78AF80B-FBD4-4442-99BC-AD27E550EFE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F78AF80B-FBD4-4442-99BC-AD27E550EFE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F78AF80B-FBD4-4442-99BC-AD27E550EFE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F78AF80B-FBD4-4442-99BC-AD27E550EFE4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {396D0138-A49B-4624-9A93-ED8311C4CDE2}
+	EndGlobalSection
+EndGlobal
