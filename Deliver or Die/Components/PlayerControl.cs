@@ -38,4 +38,6 @@ internal struct Player
     /// Determine if player is currently shooting.
     /// </summary>
     public bool Shooting;
+    public int Ammo;
+    public int MaxAmmo;
 }

@@ -93,7 +93,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
                 player.Reloading = false;
                 animation.TimePerFrame = player.AnimationTimePerFrame;
                 animation.Frames = Animations.Player.Idle;
-                // TODO: actually reload ammo
+                player.Ammo = player.MaxAmmo;
             }
         }
         else
@@ -108,7 +108,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
 
                 GameState.Game.SoundManager["assaultriflereload1"].Play(0.4f);
             }
-            else if (mouseState.LeftButton == ButtonState.Pressed && !player.Shooting)
+            else if (mouseState.LeftButton == ButtonState.Pressed && !player.Shooting && player.Ammo > 0)
             {
                 animation.Frames = Animations.Player.Shoot;
                 if (animation.FrameIndex >= animation.Frames.Count)
@@ -121,7 +121,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
                 Vector2 spawnPosition = transform.Position + spawnDirection * bulletPositionOffset;
 
                 factory.CreateBullet(spawnPosition, transform.Rotation);
-                // TODO: decrease ammo
+                player.Ammo--;
             }
         }
 

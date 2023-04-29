@@ -78,7 +78,9 @@ internal class LevelFactory
             {
                 MoveSpeed = 500.0f,
                 ReloadTime = 2.0f,
-                ShootingSpeed = 5,
+                ShootingSpeed = 5.0f,
+                Ammo = 5,
+                MaxAmmo = 5,
             })
             .Add(new Animation()
             {
