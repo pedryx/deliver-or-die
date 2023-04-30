@@ -109,10 +109,8 @@ internal class LevelState : GameState
     private void CreateEntities()
     {
         Player = factory.CreatePlayer();
+        WorldGenerator.Generate(this, factory);
         factory.CreateZombie(new Vector2(0.0f, 500.0f));
-
-        CreateDeliverySpot(new Vector2(-500.0f, 0.0f));
-        CreateDeliverySpot(new Vector2(500.0f, 0.0f));
 
         Camera.Target = Player;
 
