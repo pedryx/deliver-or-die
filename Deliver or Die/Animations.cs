@@ -17,6 +17,53 @@ internal static class Animations
         Animations.textures = textures;
     }
 
+    public static class Zombie
+    {
+        public static List<AnimationFrame> Idle { get; private set; }
+            = AnimationFactory.CreateImagesAnimation(new List<string>()
+            {
+                "skeleton-idle_0",
+                "skeleton-idle_1",
+                "skeleton-idle_2",
+                "skeleton-idle_3",
+                "skeleton-idle_4",
+                "skeleton-idle_5",
+                "skeleton-idle_6",
+                "skeleton-idle_7",
+                "skeleton-idle_8",
+                "skeleton-idle_9",
+                "skeleton-idle_10",
+                "skeleton-idle_11",
+                "skeleton-idle_12",
+                "skeleton-idle_13",
+                "skeleton-idle_14",
+                "skeleton-idle_15",
+                "skeleton-idle_16",
+            }, textures);
+
+        public static List<AnimationFrame> Move { get; private set; }
+            = AnimationFactory.CreateImagesAnimation(new List<string>()
+            {
+                "skeleton-move_0",
+                "skeleton-move_1",
+                "skeleton-move_2",
+                "skeleton-move_3",
+                "skeleton-move_4",
+                "skeleton-move_5",
+                "skeleton-move_6",
+                "skeleton-move_7",
+                "skeleton-move_8",
+                "skeleton-move_9",
+                "skeleton-move_10",
+                "skeleton-move_11",
+                "skeleton-move_12",
+                "skeleton-move_13",
+                "skeleton-move_14",
+                "skeleton-move_15",
+                "skeleton-move_16",
+            }, textures);
+    }
+
     public static class Player
     {
         public static List<AnimationFrame> Idle { get; private set; }
