@@ -42,7 +42,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, 
     protected override void Update
     (
         ref Transform transform,
-        ref Movement  movememnt,
+        ref Movement  movement,
         ref Animation animation,
         ref Player    player
     )
@@ -63,18 +63,18 @@ internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, 
 
         if (currentMovement)
         {
-            movememnt.Direction = MathUtils.VectorToAngle(movementDirection);
+            movement.Direction = MathUtils.VectorToAngle(movementDirection);
             SoundSequences.Player.Walk.Play(0.3f);
         }
 
         if (currentMovement && !lastMovement)
         {
-            movememnt.Speed = player.MoveSpeed;
+            movement.Speed = player.MoveSpeed;
             animation.Frames = Animations.Player.Move;
         }
         if (!currentMovement && lastMovement)
         {
-            movememnt.Speed = 0.0f;
+            movement.Speed = 0.0f;
             animation.Frames = Animations.Player.Idle;
         }
 

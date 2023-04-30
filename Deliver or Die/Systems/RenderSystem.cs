@@ -20,7 +20,7 @@ internal class RenderSystem : GameSystem<Transform, Appearance>
 
     protected override void PreUpdate()
     {
-        spriteBatch.Begin(transformMatrix: camera.GetTransformMatrix());
+        spriteBatch.Begin(transformMatrix: camera.GetTransformMatrix(), sortMode: SpriteSortMode.BackToFront);
     }
 
     protected override void Update(ref Transform transform, ref Appearance appearance)

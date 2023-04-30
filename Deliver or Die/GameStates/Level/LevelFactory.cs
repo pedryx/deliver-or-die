@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using System;
-using System.Threading;
 
 namespace DeliverOrDie.GameStates.Level;
 /// <summary>
@@ -18,15 +17,14 @@ internal class LevelFactory
     private readonly World ecsWorld;
     private readonly TextureManager textures;
     private readonly TimeToLiveSystem timeToLiveSystem;
-    private readonly Random random = new();
-    private readonly GameState gameState;
+    private readonly LevelState levelState;
 
     public LevelFactory(LevelState levelState)
     {
         ecsWorld = levelState.ECSWorld;
         textures = levelState.Game.TextureManager;
         timeToLiveSystem = levelState.TimeToLiveSystem;
-        gameState = levelState;
+        this.levelState = levelState;
     }
 
     public Entity CreateSquare(Vector2 position, float size, Color color, float layerDepth = 0.0f)
@@ -48,7 +46,7 @@ internal class LevelFactory
 
     public Entity CreateBullet(Vector2 position, float direction)
     {
-        Texture2D buletTexture = textures["bullet"];
+        Texture2D bulletTexture = textures["bullet"];
 
         Entity bullet = ecsWorld.Spawn()
             .Add(new Transform()
@@ -59,10 +57,10 @@ internal class LevelFactory
             })
             .Add(new Appearance()
             {
-                Texture = buletTexture,
+                Texture = bulletTexture,
                 Color = Color.Gold,
                 ScaleOffset = 0.007f,
-                Origin = new Vector2(buletTexture.Width, buletTexture.Height) / 2.0f,
+                Origin = new Vector2(bulletTexture.Width, bulletTexture.Height) / 2.0f,
                 RotationOffset = - MathF.PI / 2.0f,
             })
             .Add(new Movement()
@@ -112,22 +110,28 @@ internal class LevelFactory
                 Layer = Collider.Layers.Player,
                 Radius = 30.0f,
                 CollisionLayer = Collider.Layers.Zombie | Collider.Layers.Obstacle,
+                ReactionLayer = Collider.Layers.DeliverySpot,
+                Reaction = (data) =>
+                {
+                    if ((int)data == levelState.QuestDeliverySpotIndex)
+                        levelState.CompleteDelivery();
+                },
             })
             .Add<Movement>()
             .Add(new Health()
             {
                 Max = 5.0f,
                 Current = 5.0f,
-                EntityIndex = gameState.GetNextIndex(),
+                EntityIndex = levelState.GetNextIndex(),
                 OnDead = (position) =>
                 {
-                    gameState.Camera.Target = null;
+                    levelState.Camera.Target = null;
                     // TODO: player on dead
                 },
             })
             .Id();
 
-        gameState.AddEntity(player);
+        levelState.AddEntity(player);
         return player;
     }
 
@@ -139,7 +143,7 @@ internal class LevelFactory
             .Add(new Transform()
             {
                 Position = position,
-                Rotation = random.NextAngle(),
+                Rotation = levelState.Game.Random.NextAngle(),
                 Scale = 1.0f,
             })
             .Add(Appearance.Create(textures["skeleton-idle_0"], 0.44f))
@@ -165,12 +169,37 @@ internal class LevelFactory
             {
                 Max = 1.0f,
                 Current = 1.0f,
-                EntityIndex = gameState.GetNextIndex(),
+                EntityIndex = levelState.GetNextIndex(),
                 // TODO: zombie on dead
             })
             .Id();
 
-        gameState.AddEntity(zombie);
+        levelState.AddEntity(zombie);
         return zombie;
+    }
+
+    public Entity CreateDeliverySpot(Vector2 position, int id)
+    {
+        Texture2D texture = textures["circle"];
+
+        Entity mailBox = ecsWorld.Spawn()
+            .Add(Transform.Create(position))
+            .Add(new Appearance()
+            {
+                Texture = texture,
+                Color = Color.DarkGray,
+                ScaleOffset = 0.5f,
+                Origin = new Vector2(texture.Width, texture.Height) / 2.0f,
+                LayerDepth = 1.0f,
+            })
+            .Add(new Collider()
+            {
+                Radius = 32.0f,
+                Layer = Collider.Layers.DeliverySpot,
+                Data = id,
+            })
+            .Id();
+
+        return mailBox;
     }
 }

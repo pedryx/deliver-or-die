@@ -3,6 +3,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using System;
+
 namespace DeliverOrDie;
 /// <summary>
 /// Main game class.
@@ -27,6 +29,7 @@ internal class LDGame : Game
     public TextureManager TextureManager { get; private set; }
     public SoundManager SoundManager { get; private set; } = new();
     public FontManager FontManager { get; private set; }
+    public Random Random { get; private set; } = new();
 
     /// <summary>
     /// Width and height of game window.

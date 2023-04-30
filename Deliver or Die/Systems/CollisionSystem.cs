@@ -4,6 +4,8 @@ using HypEcs;
 
 using Microsoft.Xna.Framework;
 
+using System;
+
 namespace DeliverOrDie.Systems;
 internal class CollisionSystem : GameSystem<Transform, Collider>
 {
@@ -25,62 +27,74 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
         float radius = collider.Radius;
         Collider.Layers damageLayer = collider.DamageLayer;
         Collider.Layers collisionLayer = collider.CollisionLayer;
+        Collider.Layers reactionLayer = collider.ReactionLayer;
         float damage = collider.Damage;
+        Action<object> reaction = collider.Reaction;
+        object data = collider.Data;
 
         movementHealthQuery.Run((count, transforms, colliders, movements, healths) =>
         {
-            for (int i = 0; i < count; i++)
+            HandleCollisions(position, radius, transforms, colliders, (i) =>
             {
-                float distance = Vector2.Distance(position, transforms[i].Position);
-
-                if (distance < radius + colliders[i].Radius)
-                {
-                    if ((collisionLayer & colliders[i].Layer) > 0)
-                        RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
-                    if ((damageLayer & colliders[i].Layer) > 0)
-                        DealDamage(damage, ref transforms[i], ref healths[i]);
-                }
-            }
+                if ((reactionLayer & colliders[i].Layer) > 0)
+                    reaction?.Invoke(data);
+                if ((collisionLayer & colliders[i].Layer) > 0)
+                    RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
+                if ((damageLayer & colliders[i].Layer) > 0)
+                    DealDamage(damage, ref transforms[i], ref healths[i]);
+            });
         });
 
         movementQuery.Run((count, transforms, colliders, movements) =>
         {
-            for (int i = 0; i < count; i++)
+            HandleCollisions(position, radius, transforms, colliders, (i) =>
             {
-                float distance = Vector2.Distance(position, transforms[i].Position);
-
-                if (distance < radius + colliders[i].Radius)
-                {
-                    if ((collisionLayer & colliders[i].Layer) > 0)
-                        RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
-                }
-            }
+                if ((reactionLayer & colliders[i].Layer) > 0)
+                    reaction?.Invoke(data);
+                if ((collisionLayer & colliders[i].Layer) > 0)
+                    RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
+            });
         });
 
         healthQuery.Run((count, transforms, colliders, healths) =>
         {
-            for (int i = 0; i < count; i++)
+            HandleCollisions(position, radius, transforms, colliders, (i) =>
             {
-                float distance = Vector2.Distance(position, transforms[i].Position);
-
-                if (distance < radius + colliders[i].Radius)
-                {
-                    if ((damageLayer & colliders[i].Layer) > 0)
-                        DealDamage(damage, ref transforms[i], ref healths[i]);
-                }
-            }
+                if ((reactionLayer & colliders[i].Layer) > 0)
+                    reaction?.Invoke(data);
+                if ((damageLayer & colliders[i].Layer) > 0)
+                    DealDamage(damage, ref transforms[i], ref healths[i]);
+            });
         });
     }
 
-    private void RevertMovement(Vector2 positon1, float radius1, float radius2, float speed2, ref Transform transform2)
+    private static void HandleCollisions
+    (
+        Vector2 position,
+        float radius,
+        Transform[] transforms,
+        Collider[] colliders,
+        Action<int> action
+    )
+    {
+        for (int i = 0; i < transforms.Length; i++)
+        {
+            float distance = Vector2.Distance(position, transforms[i].Position);
+
+            if (distance < radius + colliders[i].Radius)
+                action.Invoke(i);
+        }
+    }
+
+    private static void RevertMovement(Vector2 position1, float radius1, float radius2, float speed2, ref Transform transform2)
     {
         if (speed2 == 0.0f)
             return;
 
-        Vector2 direction = transform2.Position - positon1;
+        Vector2 direction = transform2.Position - position1;
         direction.Normalize();
 
-        float distance = radius1 + radius2 - Vector2.Distance(transform2.Position, positon1);
+        float distance = radius1 + radius2 - Vector2.Distance(transform2.Position, position1);
 
         transform2.Position += direction * distance;
     }

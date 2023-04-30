@@ -5,16 +5,28 @@ using HypEcs;
 
 using Microsoft.Xna.Framework;
 
+using System.Collections.Generic;
+
 namespace DeliverOrDie.GameStates.Level;
 /// <summary>
 /// Game state with main gameplay.
 /// </summary>
 internal class LevelState : GameState
 {
+    private readonly List<Entity> deliverySpots = new();
+
     private LevelFactory factory;
     private Entity player;
 
     public TimeToLiveSystem TimeToLiveSystem { get; private set; }
+
+    public int QuestDeliverySpotIndex { get; private set; }
+
+    public void CompleteDelivery()
+    {
+        // TODO: upgrade
+        GenerateDeliveryQuest(QuestDeliverySpotIndex);
+    }
 
     protected override void Initialize()
     {
@@ -24,6 +36,8 @@ internal class LevelState : GameState
         CreateEntities();
         CreateSystems();
         CreateUI();
+
+        GenerateDeliveryQuest();
     }
 
     private void CreateSystems()
@@ -42,16 +56,6 @@ internal class LevelState : GameState
         ;
     }
 
-    private void CreateEntities()
-    {
-        player = factory.CreatePlayer();
-        factory.CreateZombie(new Vector2(500.0f, 0.0f));
-
-        Camera.Target = player;
-
-        Game.SoundManager["AmbientNatureOutside"].PlayLoop();
-    }
-
     private void CreateUI()
     {
         UILayer.AddElement(new AmmoCounter()
@@ -64,5 +68,29 @@ internal class LevelState : GameState
             Offset = new Vector2(Game.Resolution.X / 2.0f, Game.Resolution.Y - 10.0f),
             TrackedEntity = player,
         });
+    }
+
+    private void CreateEntities()
+    {
+        player = factory.CreatePlayer();
+        //factory.CreateZombie(new Vector2(500.0f, 0.0f));
+
+        CreateDeliverySpot(new Vector2(-500.0f, 0.0f));
+        CreateDeliverySpot(new Vector2(500.0f, 0.0f));
+
+        Camera.Target = player;
+
+        Game.SoundManager["AmbientNatureOutside"].PlayLoop();
+    }
+
+    private void GenerateDeliveryQuest(int lastSpotIndex = -1)
+    {
+        while ((QuestDeliverySpotIndex = Game.Random.Next(deliverySpots.Count)) == lastSpotIndex) ;
+    }
+
+    private void CreateDeliverySpot(Vector2 position)
+    {
+        Entity spot = factory.CreateDeliverySpot(position, deliverySpots.Count);
+        deliverySpots.Add(spot);
     }
 }
