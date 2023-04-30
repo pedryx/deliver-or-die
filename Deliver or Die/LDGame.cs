@@ -12,7 +12,7 @@ internal class LDGame : Game
     /// <summary>
     /// Color used for clear graphics buffer.
     /// </summary>
-    private readonly Color clearColor = Color.DarkGreen;
+    private readonly Color clearColor = new(0, 82, 22);
 
     /// <summary>
     /// How fast is the game running, should not affect performance.
