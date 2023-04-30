@@ -33,6 +33,7 @@ internal class LevelState : GameState
             .Add(new PlayerControlSystem(this, factory))
             .Add(new ZombieSystem(this, player))
             .Add(new MovementSystem(this))
+            .Add(new CollisionSystem(this))
             .Add(new AnimationSystem(this))
             .Add(TimeToLiveSystem)
         ;
@@ -44,7 +45,7 @@ internal class LevelState : GameState
     private void CreateEntities()
     {
         player = factory.CreatePlayer();
-        factory.CreateZombie(new Vector2(100.0f, 0.0f));
+        factory.CreateZombie(new Vector2(500.0f, 0.0f));
 
         Camera.Target = player;
 

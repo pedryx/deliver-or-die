@@ -2,12 +2,18 @@
 
 using HypEcs;
 
+using System.Collections.Generic;
+
 namespace DeliverOrDie;
 /// <summary>
 /// Represent "game screen".
 /// </summary>
 internal class GameState
 {
+    private readonly Dictionary<int, Entity> entities = new();
+
+    private int lastIndex = 0;
+
     /// <summary>
     /// ECS world local to this game state.
     /// </summary>
@@ -36,6 +42,23 @@ internal class GameState
     /// Create entities and systems.
     /// </summary>
     protected virtual void Initialize() { }
+
+    public int GetNextIndex()
+    {
+        return lastIndex;
+    }
+
+    public void AddEntity(Entity entity)
+    {
+        entities.Add(lastIndex, entity);
+        lastIndex++;
+    }
+
+    public void DestroyEntity(int index)
+    {
+        ECSWorld.Despawn(entities[index]);
+        entities.Remove(index);
+    }
 
     public void Initialize(LDGame game)
     {

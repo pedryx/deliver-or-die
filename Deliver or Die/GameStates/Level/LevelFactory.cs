@@ -19,12 +19,14 @@ internal class LevelFactory
     private readonly TextureManager textures;
     private readonly TimeToLiveSystem timeToLiveSystem;
     private readonly Random random = new();
+    private readonly GameState gameState;
 
     public LevelFactory(LevelState levelState)
     {
         ecsWorld = levelState.ECSWorld;
         textures = levelState.Game.TextureManager;
         timeToLiveSystem = levelState.TimeToLiveSystem;
+        gameState = levelState;
     }
 
     public Entity CreateSquare(Vector2 position, float size, Color color, float layerDepth = 0.0f)
@@ -68,6 +70,13 @@ internal class LevelFactory
                 Speed = 3000.0f,
                 Direction = direction,
             })
+            .Add(new Collider()
+            {
+                Radius = 1.0f,
+                Damage = 1.0f,
+                Layer = Collider.Layers.Bullet,
+                DamageLayer = Collider.Layers.Zombie,
+            })
             .Id();
         timeToLiveSystem.Add(bullet, 5.0f);
 
@@ -98,8 +107,23 @@ internal class LevelFactory
                 TimePerFrame = 0.06f,
                 Frames = Animations.Player.Idle,
             })
+            .Add(new Collider()
+            {
+                Layer = Collider.Layers.Player,
+                Radius = 30.0f,
+                CollisionLayer = Collider.Layers.Zombie | Collider.Layers.Obstacle,
+            })
+            .Add<Movement>()
+            .Add(new Health()
+            {
+                Max = 5.0f,
+                Current = 5.0f,
+                EntityIndex = gameState.GetNextIndex(),
+                // TODO: player on dead
+            })
             .Id();
 
+        gameState.AddEntity(player);
         return player;
     }
 
@@ -126,8 +150,22 @@ internal class LevelFactory
                 MoveSpeed = 100.0f,
                 AttackDuration = animationTimePerFrame * Animations.Zombie.Attack.Count,
             })
+            .Add(new Collider()
+            {
+                Layer = Collider.Layers.Zombie,
+                Radius = 50.0f,
+                CollisionLayer = Collider.Layers.Player | Collider.Layers.Obstacle,
+            })
+            .Add(new Health()
+            {
+                Max = 1.0f,
+                Current = 1.0f,
+                EntityIndex = gameState.GetNextIndex(),
+                // TODO: zombie on dead
+            })
             .Id();
 
+        gameState.AddEntity(zombie);
         return zombie;
     }
 }

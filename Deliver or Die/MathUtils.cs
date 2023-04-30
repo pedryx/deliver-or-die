@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+
+using System;
 
 namespace DeliverOrDie;
 /// <summary>
@@ -20,4 +22,10 @@ internal static class MathUtils
 
         return angle;
     }
+
+    public static Vector2 AngleToVector(float angle)
+        => new(MathF.Cos(angle), MathF.Sin(angle));
+
+    public static float VectorToAngle(Vector2 vector)
+        => MathF.Atan2(vector.Y, vector.X);
 }

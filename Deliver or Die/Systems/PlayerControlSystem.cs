@@ -13,17 +13,17 @@ namespace DeliverOrDie.Systems;
 /// <summary>
 /// Handles control of player character.
 /// </summary>
-internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
+internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, Player>
 {
-    private const Keys upKey    = Keys.W;
-    private const Keys leftKey  = Keys.A;
-    private const Keys downKey  = Keys.S;
-    private const Keys rightKey = Keys.D;
+    private const Keys upKey     = Keys.W;
+    private const Keys leftKey   = Keys.A;
+    private const Keys downKey   = Keys.S;
+    private const Keys rightKey  = Keys.D;
     private const Keys reloadKey = Keys.R;
-    private const Keys debugKey = Keys.F3;
+    private const Keys debugKey  = Keys.F3;
 
-    private const float bulletDirectionOffset = 0.3f;
-    private const float bulletPositionOffset = 55.0f;
+    private const float bulletDirectionOffset =  0.3f;
+    private const float bulletPositionOffset  = 55.0f;
 
     private readonly LevelFactory factory;
 
@@ -39,7 +39,13 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
         this.factory = factory;
     }
 
-    protected override void Update(ref Transform transform, ref Animation animation, ref Player player)
+    protected override void Update
+    (
+        ref Transform transform,
+        ref Movement  movememnt,
+        ref Animation animation,
+        ref Player    player
+    )
     {
         KeyboardState keyboardState = Keyboard.GetState();
         MouseState mouseState = Mouse.GetState();
@@ -57,16 +63,20 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
 
         if (currentMovement)
         {
-            movementDirection.Normalize();
+            movememnt.Direction = MathUtils.VectorToAngle(movementDirection);
             SoundSequences.Player.Walk.Play(0.3f);
         }
 
-        transform.Position += movementDirection * player.MoveSpeed * GameState.Elapsed * GameState.Game.Speed;
-
         if (currentMovement && !lastMovement)
+        {
+            movememnt.Speed = player.MoveSpeed;
             animation.Frames = Animations.Player.Move;
+        }
         if (!currentMovement && lastMovement)
+        {
+            movememnt.Speed = 0.0f;
             animation.Frames = Animations.Player.Idle;
+        }
 
         Vector2 lookDirection = mouseState.Position.ToVector2() - GameState.Game.Resolution / 2;
         lookDirection.Normalize();

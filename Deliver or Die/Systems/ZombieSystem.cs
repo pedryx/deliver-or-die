@@ -7,10 +7,13 @@ using Microsoft.Xna.Framework;
 using System;
 
 namespace DeliverOrDie.Systems;
+/// <summary>
+/// Handles behavior of zombies.
+/// </summary>
 internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieBehavior>
 {
     private const float moveDistance = 1000.0f;
-    private const float attackDistance = 70.0f;
+    private const float attackDistance = 81.0f;
 
     private readonly Entity player;
     private readonly World ecsWorld;
@@ -99,20 +102,21 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
         if (components.Zombie.Elapsed >= components.Zombie.AttackDuration)
         {
             components.Zombie.Elapsed = 0;
+            MoveTowardsPlayer(components);
 
             if (NearPlayer(components.Transform.Position, attackDistance))
             {
+                components.Movement.Speed = 0.0f;
                 DealDamageToPlayer(components);
             }
             else if (NearPlayer(components.Transform.Position, moveDistance))
             {
                 components.Animation.Frames = Animations.Zombie.Move;
                 components.Zombie.State = ZombieBehavior.BehaviorState.Move;
-
-                MoveTowardsPlayer(components);
             }
             else
             {
+                components.Movement.Speed = 0.0f;
                 components.Animation.Frames = Animations.Zombie.Idle;
                 components.Zombie.State = ZombieBehavior.BehaviorState.Idle;
             }
