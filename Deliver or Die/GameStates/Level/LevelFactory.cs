@@ -171,7 +171,10 @@ internal class LevelFactory
                 Max = 1.0f,
                 Current = 1.0f,
                 EntityIndex = levelState.GetNextIndex(),
-                // TODO: zombie on dead
+                OnDead = (position) =>
+                {
+                    levelState.Game.Statistics.Increment("zombie killed", 1.0f);
+                }
             })
             .Id();
 

@@ -35,6 +35,7 @@ internal class LDGame : Game
     public SoundManager SoundManager { get; private set; } = new();
     public FontManager FontManager { get; private set; }
     public Random Random { get; private set; } = new();
+    public Statistics Statistics { get; private set; } = new();
 
     /// <summary>
     /// Width and height of game window.
@@ -72,12 +73,16 @@ internal class LDGame : Game
 
     protected override void Update(GameTime gameTime)
     {
-        activeStates.ForEach(state => state.Update((float)gameTime.ElapsedGameTime.TotalSeconds));
+        float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        activeStates.ForEach(state => state.Update(elapsed));
 
         gameStatesToAdd.ForEach(activeStates.Add);
         gameStatesToRemove.ForEach(state => activeStates.Remove(state));
         gameStatesToAdd.Clear();
         gameStatesToRemove.Clear();
+
+        Statistics.Increment("play time", elapsed);
 
         base.Update(gameTime);
     }

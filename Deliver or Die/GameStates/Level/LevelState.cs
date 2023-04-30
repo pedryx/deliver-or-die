@@ -29,6 +29,8 @@ internal class LevelState : GameState
 
     public void CompleteDelivery()
     {
+        Game.Statistics.Increment("deliveries made", 1.0f);
+
         Enable = false;
         var upgradeMenuState = new UpgradeMenuState(this);
         upgradeMenuState.Initialize(Game);
