@@ -22,8 +22,8 @@ internal class PlayerControlSystem : GameSystem<Transform, Animation, Player>
     private const Keys reloadKey = Keys.R;
     private const Keys debugKey = Keys.F3;
 
-    private const float bulletDirectionOffset = 0.4f;
-    private const float bulletPositionOffset = 40.0f;
+    private const float bulletDirectionOffset = 0.3f;
+    private const float bulletPositionOffset = 55.0f;
 
     private readonly LevelFactory factory;
 

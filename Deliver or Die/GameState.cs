@@ -50,6 +50,7 @@ internal class GameState
         Elapsed = elapsed;
      
         UpdateSystems.Run(ECSWorld);
+        UILayer.Update(Elapsed);
         Camera.Update();
     }
 
@@ -58,5 +59,6 @@ internal class GameState
         Elapsed = elapsed;
         
         RenderSystems.Run(ECSWorld);
+        UILayer.Draw(Elapsed);
     }
 }

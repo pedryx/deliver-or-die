@@ -4,7 +4,9 @@ using DeliverOrDie.Systems;
 using HypEcs;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
+using System;
 using System.Threading;
 
 namespace DeliverOrDie.GameStates.Level;
@@ -43,14 +45,22 @@ internal class LevelFactory
 
     public Entity CreateBullet(Vector2 position, float direction)
     {
+        Texture2D buletTexture = textures["bullet"];
+
         Entity bullet = ecsWorld.Spawn()
-            .Add(Transform.Create(position))
+            .Add(new Transform()
+            {
+                Position = position,
+                Rotation = direction,
+                Scale = 1.0f,
+            })
             .Add(new Appearance()
             {
-                Texture = textures.Square,
-                Color = Color.Black,
-                ScaleOffset = 3.0f,
-                Origin = new Vector2(0.5f),
+                Texture = buletTexture,
+                Color = Color.Gold,
+                ScaleOffset = 0.007f,
+                Origin = new Vector2(buletTexture.Width, buletTexture.Height) / 2.0f,
+                RotationOffset = - MathF.PI / 2.0f,
             })
             .Add(new Movement()
             {
@@ -90,5 +100,20 @@ internal class LevelFactory
             .Id();
 
         return player;
+    }
+
+    public Entity CreateZombie(Vector2 position)
+    {
+        Entity zombie = ecsWorld.Spawn()
+            .Add(Transform.Create(position))
+            .Add(Appearance.Create(textures["skeleton-idle_0"], 0.44f))
+            .Add(new Animation()
+            {
+                TimePerFrame = 0.125f,
+                Frames = Animations.Zombie.Idle,
+            })
+            .Id();
+
+        return zombie;
     }
 }

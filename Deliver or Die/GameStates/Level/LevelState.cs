@@ -1,6 +1,9 @@
 ﻿using DeliverOrDie.Systems;
+using DeliverOrDie.UI.Elements;
 
 using HypEcs;
+
+using Microsoft.Xna.Framework;
 
 namespace DeliverOrDie.GameStates.Level;
 /// <summary>
@@ -9,6 +12,7 @@ namespace DeliverOrDie.GameStates.Level;
 internal class LevelState : GameState
 {
     private LevelFactory factory;
+    private Entity player;
 
     public TimeToLiveSystem TimeToLiveSystem { get; private set; }
 
@@ -19,6 +23,7 @@ internal class LevelState : GameState
 
         CreateSystems();
         CreateEntities();
+        CreateUI();
     }
 
     private void CreateSystems()
@@ -37,10 +42,20 @@ internal class LevelState : GameState
 
     private void CreateEntities()
     {
-        Entity player = factory.CreatePlayer();
+        player = factory.CreatePlayer();
+        factory.CreateZombie(new Vector2(100.0f, 0.0f));
 
         Camera.Target = player;
 
         Game.SoundManager["AmbientNatureOutside"].PlayLoop();
+    }
+
+    private void CreateUI()
+    {
+        UILayer.AddElement(new AmmoCounter()
+        {
+            Offset = new Vector2(0.0f, Game.Resolution.Y - 20.0f),
+            TrackedEntity = player,
+        });
     }
 }
