@@ -194,7 +194,7 @@ internal class LevelFactory
             })
             .Add(new Collider()
             {
-                Radius = 32.0f,
+                Radius = 128.0f,
                 Layer = Collider.Layers.DeliverySpot,
                 Data = id,
             })

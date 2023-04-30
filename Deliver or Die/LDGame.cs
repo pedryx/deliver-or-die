@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 using System;
+using System.Collections.Generic;
 
 namespace DeliverOrDie;
 /// <summary>
@@ -23,7 +24,7 @@ internal class LDGame : Game
     /// <summary>
     /// Currently active state.
     /// </summary>
-    public GameState ActiveState { get; private set; } = new LevelState();
+    public List<GameState> ActiveStates { get; private set; } = new() { new LevelState() };
     public GraphicsDeviceManager Graphics { get; private set; }
     public SpriteBatch SpriteBatch { get; private set; }
     public TextureManager TextureManager { get; private set; }
@@ -54,14 +55,14 @@ internal class LDGame : Game
 
         Animations.Initialize(TextureManager);
         SoundSequences.Initialize(SoundManager);
-        ActiveState.Initialize(this);
+        ActiveStates.ForEach(state => state.Initialize(this));
 
         base.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)
     {
-        ActiveState.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+        ActiveStates.ForEach(state => state.Update((float)gameTime.ElapsedGameTime.TotalSeconds));
 
         base.Update(gameTime);
     }
@@ -69,7 +70,7 @@ internal class LDGame : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(clearColor);
-        ActiveState.Draw((float)gameTime.ElapsedGameTime.TotalSeconds);
+        ActiveStates.ForEach(state => state.Draw((float)gameTime.ElapsedGameTime.TotalSeconds));
 
         base.Draw(gameTime);
     }

@@ -53,11 +53,6 @@ internal class AmmoCounter : UIElement
         base.Update(elapsed, position);
     }
 
-    public override void Draw(float elapsed, Vector2 position)
-    {
-        base.Draw(elapsed, position);
-    }
-
     private void SetText()
     {
         ref Player player = ref Owner.GameState.ECSWorld.GetComponent<Player>(TrackedEntity);

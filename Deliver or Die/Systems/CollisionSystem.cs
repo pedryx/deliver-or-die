@@ -12,6 +12,7 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
     private readonly Query<Transform, Collider, Movement, Health> movementHealthQuery;
     private readonly Query<Transform, Collider, Movement> movementQuery;
     private readonly Query<Transform, Collider, Health> healthQuery;
+    private readonly Query<Transform, Collider> reactionsOnlyQuery;
 
     public CollisionSystem(GameState gameState)
         : base(gameState)
@@ -19,6 +20,7 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
         movementHealthQuery = gameState.ECSWorld.Query<Transform, Collider, Movement, Health>().Build();
         movementQuery = gameState.ECSWorld.Query<Transform, Collider, Movement>().Not<Health>().Build();
         healthQuery = gameState.ECSWorld.Query<Transform, Collider, Health>().Not<Movement>().Build();
+        reactionsOnlyQuery = gameState.ECSWorld.Query<Transform, Collider>().Not<Movement>().Not<Health>().Build();
     }
 
     protected override void Update(ref Transform transform, ref Collider collider)
@@ -30,14 +32,13 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
         Collider.Layers reactionLayer = collider.ReactionLayer;
         float damage = collider.Damage;
         Action<object> reaction = collider.Reaction;
-        object data = collider.Data;
 
         movementHealthQuery.Run((count, transforms, colliders, movements, healths) =>
         {
             HandleCollisions(position, radius, transforms, colliders, (i) =>
             {
                 if ((reactionLayer & colliders[i].Layer) > 0)
-                    reaction?.Invoke(data);
+                    reaction?.Invoke(colliders[i].Data);
                 if ((collisionLayer & colliders[i].Layer) > 0)
                     RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
                 if ((damageLayer & colliders[i].Layer) > 0)
@@ -50,7 +51,7 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
             HandleCollisions(position, radius, transforms, colliders, (i) =>
             {
                 if ((reactionLayer & colliders[i].Layer) > 0)
-                    reaction?.Invoke(data);
+                    reaction?.Invoke(colliders[i].Data);
                 if ((collisionLayer & colliders[i].Layer) > 0)
                     RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
             });
@@ -61,9 +62,18 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
             HandleCollisions(position, radius, transforms, colliders, (i) =>
             {
                 if ((reactionLayer & colliders[i].Layer) > 0)
-                    reaction?.Invoke(data);
+                    reaction?.Invoke(colliders[i].Data);
                 if ((damageLayer & colliders[i].Layer) > 0)
                     DealDamage(damage, ref transforms[i], ref healths[i]);
+            });
+        });
+
+        reactionsOnlyQuery.Run((count, transforms, colliders) =>
+        {
+            HandleCollisions(position, radius, transforms, colliders, (i) =>
+            {
+                if ((reactionLayer & colliders[i].Layer) > 0)
+                    reaction?.Invoke(colliders[i].Data);
             });
         });
     }
