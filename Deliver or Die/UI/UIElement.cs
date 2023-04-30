@@ -20,6 +20,11 @@ internal abstract class UIElement
     /// </summary>
     public UILayer Owner { get; private set; }
 
+    /// <summary>
+    /// Get size of an element.
+    /// </summary>
+    public virtual Vector2 Size { get; }
+
     protected virtual void Initialize() { }
 
     /// <summary>

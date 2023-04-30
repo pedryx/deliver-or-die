@@ -16,6 +16,8 @@ internal class Label : UIElement
     public SpriteEffects SpriteEffects;
     public float LayerDepth;
 
+    public override Vector2 Size => Font.MeasureString(Text) * Scale;
+
     public override void Draw(float elapsed, Vector2 position)
     {
         Owner.GameState.Game.SpriteBatch.DrawString

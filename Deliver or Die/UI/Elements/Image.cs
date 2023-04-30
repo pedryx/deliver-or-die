@@ -16,6 +16,10 @@ internal class Image : UIElement
     public SpriteEffects SpriteEffects;
     public float LayerDepth;
 
+    public override Vector2 Size => (SourceRectangle == null
+        ? new Vector2(Texture.Width, Texture.Height)
+        : SourceRectangle.Value.Size.ToVector2()) * Scale;
+
     public override void Draw(float elapsed, Vector2 position)
     {
         Owner.GameState.Game.SpriteBatch.Draw
