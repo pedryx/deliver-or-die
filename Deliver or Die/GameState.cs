@@ -24,6 +24,12 @@ internal class GameState
     /// </summary>
     public Camera Camera { get; private set; }
     public UILayer UILayer { get; private set; }
+    /// <summary>
+    /// Time elapsed between update/draw calls.
+    /// </summary>
+    public float Elapsed { get; private set; }
+    public bool Visible = true;
+    public bool Enable = true;
 
     /// <summary>
     /// Systems used in update call.
@@ -33,10 +39,7 @@ internal class GameState
     /// Systems used in draw call.
     /// </summary>
     protected SystemGroup RenderSystems { get; private set; } = new();
-    /// <summary>
-    /// Time elapsed between update/draw calls.
-    /// </summary>
-    public float Elapsed { get; private set; }
+
 
     /// <summary>
     /// Create entities and systems.
@@ -70,6 +73,9 @@ internal class GameState
 
     public void Update(float elapsed)
     {
+        if (!Enable)
+            return;
+
         Elapsed = elapsed;
      
         UpdateSystems.Run(ECSWorld);
@@ -79,6 +85,9 @@ internal class GameState
 
     public void Draw(float elapsed)
     {
+        if (!Visible)
+            return;
+
         Elapsed = elapsed;
         
         RenderSystems.Run(ECSWorld);
