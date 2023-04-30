@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Resources;
 /// <summary>
 /// Manages textures, textures are lazy loaded (on first access).
 /// </summary>

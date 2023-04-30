@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using DeliverOrDie.Resources;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Animation;
 /// <summary>
 /// Contains animations for entities.
 /// </summary>

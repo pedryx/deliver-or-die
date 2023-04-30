@@ -40,6 +40,12 @@ internal class LevelState : GameState
         timer.Time = deliveryTime;
     }
 
+    public void CreateDeliverySpot(Vector2 position)
+    {
+        Entity spot = factory.CreateDeliverySpot(position, deliverySpots.Count);
+        deliverySpots.Add(spot);
+    }
+
     protected override void Initialize()
     {
         TimeToLiveSystem = new TimeToLiveSystem(this);
@@ -117,11 +123,5 @@ internal class LevelState : GameState
     {
         while ((QuestDeliverySpotIndex = Game.Random.Next(deliverySpots.Count)) == lastSpotIndex) ;
         directionMarker.Destination = deliverySpots[QuestDeliverySpotIndex];
-    }
-
-    private void CreateDeliverySpot(Vector2 position)
-    {
-        Entity spot = factory.CreateDeliverySpot(position, deliverySpots.Count);
-        deliverySpots.Add(spot);
     }
 }

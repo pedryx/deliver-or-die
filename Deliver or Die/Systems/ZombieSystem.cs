@@ -1,4 +1,5 @@
-﻿using DeliverOrDie.Components;
+﻿using DeliverOrDie.Animation;
+using DeliverOrDie.Components;
 
 using HypEcs;
 

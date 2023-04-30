@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Resources;
 /// <summary>
 /// Contains sound sequences.
 /// </summary>

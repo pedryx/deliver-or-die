@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using DeliverOrDie.Resources;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Animation;
 /// <summary>
 /// Utility class used for creating animations.
 /// </summary>

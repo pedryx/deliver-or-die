@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Resources;
 /// <summary>
 /// Represent sequence with sounds.
 /// </summary>

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Resources;
 /// <summary>
 /// Manages sounds, Sounds are lazy loaded (on first access).
 /// </summary>

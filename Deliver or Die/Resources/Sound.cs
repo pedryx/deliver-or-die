@@ -2,7 +2,7 @@
 
 using System;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Resources;
 /// <summary>
 /// Wrapper around <see cref="SoundEffect"/> class with option to wait for end of effect.
 /// </summary>

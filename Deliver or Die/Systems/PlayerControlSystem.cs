@@ -1,6 +1,7 @@
-﻿using DeliverOrDie.Components;
+﻿using DeliverOrDie.Animation;
+using DeliverOrDie.Components;
 using DeliverOrDie.GameStates.Level;
-
+using DeliverOrDie.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Input;
