@@ -1,6 +1,5 @@
-﻿using DeliverOrDie.Animation;
-using DeliverOrDie.Components;
-
+﻿using DeliverOrDie.Components;
+using DeliverOrDie.Resources;
 using HypEcs;
 
 using Microsoft.Xna.Framework;

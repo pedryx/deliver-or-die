@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace DeliverOrDie.Animation;
+namespace DeliverOrDie.Resources;
 /// <summary>
 /// Represent one frame of an animation.
 /// </summary>

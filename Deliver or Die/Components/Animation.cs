@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using DeliverOrDie.Animation;
+using DeliverOrDie.Resources;
 
 namespace DeliverOrDie.Components;
 /// <summary>

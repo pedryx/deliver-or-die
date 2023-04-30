@@ -1,5 +1,4 @@
-﻿using DeliverOrDie.Animation;
-using DeliverOrDie.Components;
+﻿using DeliverOrDie.Components;
 using DeliverOrDie.GameStates.Level;
 using DeliverOrDie.Resources;
 using Microsoft.Xna.Framework;
