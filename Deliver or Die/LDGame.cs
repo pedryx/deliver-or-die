@@ -26,6 +26,7 @@ internal class LDGame : Game
     public SpriteBatch SpriteBatch { get; private set; }
     public TextureManager TextureManager { get; private set; }
     public SoundManager SoundManager { get; private set; } = new();
+    public FontManager FontManager { get; private set; }
 
     /// <summary>
     /// Width and height of game window.
@@ -45,6 +46,7 @@ internal class LDGame : Game
     protected override void LoadContent()
     {
         TextureManager = new TextureManager(GraphicsDevice);
+        FontManager = new FontManager(GraphicsDevice);
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
         Animations.Initialize(TextureManager);
