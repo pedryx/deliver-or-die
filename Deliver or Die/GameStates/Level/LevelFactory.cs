@@ -18,6 +18,7 @@ internal class LevelFactory
     private readonly World ecsWorld;
     private readonly TextureManager textures;
     private readonly TimeToLiveSystem timeToLiveSystem;
+    private readonly Random random = new();
 
     public LevelFactory(LevelState levelState)
     {
@@ -104,13 +105,26 @@ internal class LevelFactory
 
     public Entity CreateZombie(Vector2 position)
     {
+        const float animationTimePerFrame = 0.125f;
+
         Entity zombie = ecsWorld.Spawn()
-            .Add(Transform.Create(position))
+            .Add(new Transform()
+            {
+                Position = position,
+                Rotation = random.NextAngle(),
+                Scale = 1.0f,
+            })
             .Add(Appearance.Create(textures["skeleton-idle_0"], 0.44f))
             .Add(new Animation()
             {
-                TimePerFrame = 0.125f,
+                TimePerFrame = animationTimePerFrame,
                 Frames = Animations.Zombie.Idle,
+            })
+            .Add<Movement>()
+            .Add(new ZombieBehavior()
+            {
+                MoveSpeed = 100.0f,
+                AttackDuration = animationTimePerFrame * Animations.Zombie.Attack.Count,
             })
             .Id();
 

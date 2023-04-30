@@ -21,8 +21,8 @@ internal class LevelState : GameState
         TimeToLiveSystem = new TimeToLiveSystem(this);
         factory = new LevelFactory(this);
 
-        CreateSystems();
         CreateEntities();
+        CreateSystems();
         CreateUI();
     }
 
@@ -31,6 +31,7 @@ internal class LevelState : GameState
         UpdateSystems
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
+            .Add(new ZombieSystem(this, player))
             .Add(new MovementSystem(this))
             .Add(new AnimationSystem(this))
             .Add(TimeToLiveSystem)

@@ -62,6 +62,20 @@ internal static class Animations
                 "skeleton-move_15",
                 "skeleton-move_16",
             }, textures);
+
+        public static List<AnimationFrame> Attack { get; private set; }
+            = AnimationFactory.CreateImagesAnimation(new List<string>()
+            {
+                "skeleton-attack_0",
+                "skeleton-attack_1",
+                "skeleton-attack_2",
+                "skeleton-attack_3",
+                "skeleton-attack_4",
+                "skeleton-attack_5",
+                "skeleton-attack_6",
+                "skeleton-attack_7",
+                "skeleton-attack_8",
+            }, textures);
     }
 
     public static class Player
