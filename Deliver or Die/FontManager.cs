@@ -34,9 +34,9 @@ internal class FontManager
                 return value;
             else
             {
-                string file = Directory.GetFiles(contentFolder, $"{key}.*", SearchOption.AllDirectories).First();
+                string file = Directory.GetFiles(contentFolder, $"{key.Split(';').First()}.*", SearchOption.AllDirectories).First();
 
-                int size = int.Parse(key.Split(' ').Last());
+                int size = int.Parse(key.Split(';').Last());
                 SpriteFont font = TtfFontBaker.Bake
                 (
                     File.ReadAllBytes(file),
