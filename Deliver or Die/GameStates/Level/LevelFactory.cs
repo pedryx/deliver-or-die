@@ -99,6 +99,7 @@ internal class LevelFactory
                 ShootingSpeed = 5.0f,
                 Ammo = 5,
                 MaxAmmo = 5,
+                Damage = 1.0f,
             })
             .Add(new Animation()
             {
@@ -120,8 +121,8 @@ internal class LevelFactory
             .Add<Movement>()
             .Add(new Health()
             {
-                Max = 5.0f,
-                Current = 5.0f,
+                Max = 4.0f,
+                Current = 4.0f,
                 EntityIndex = levelState.GetNextIndex(),
                 OnDead = (position) =>
                 {

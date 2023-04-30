@@ -12,6 +12,10 @@ namespace DeliverOrDie;
 /// </summary>
 internal class LDGame : Game
 {
+    private readonly List<GameState> activeStates = new() { new LevelState() };
+    private readonly List<GameState> gameStatesToAdd = new();
+    private readonly List<GameState> gameStatesToRemove = new();
+
     /// <summary>
     /// Color used for clear graphics buffer.
     /// </summary>
@@ -24,7 +28,7 @@ internal class LDGame : Game
     /// <summary>
     /// Currently active state.
     /// </summary>
-    public List<GameState> ActiveStates { get; private set; } = new() { new LevelState() };
+    public IReadOnlyList<GameState> ActiveStates => activeStates;
     public GraphicsDeviceManager Graphics { get; private set; }
     public SpriteBatch SpriteBatch { get; private set; }
     public TextureManager TextureManager { get; private set; }
@@ -47,6 +51,12 @@ internal class LDGame : Game
         IsMouseVisible = true;
     }
 
+    public void AddGameState(GameState state)
+        => gameStatesToAdd.Add(state);
+
+    public void RemoveGameState(GameState state)
+        => gameStatesToRemove.Add(state);
+
     protected override void LoadContent()
     {
         TextureManager = new TextureManager(GraphicsDevice);
@@ -55,14 +65,19 @@ internal class LDGame : Game
 
         Animations.Initialize(TextureManager);
         SoundSequences.Initialize(SoundManager);
-        ActiveStates.ForEach(state => state.Initialize(this));
+        activeStates.ForEach(state => state.Initialize(this));
 
         base.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)
     {
-        ActiveStates.ForEach(state => state.Update((float)gameTime.ElapsedGameTime.TotalSeconds));
+        activeStates.ForEach(state => state.Update((float)gameTime.ElapsedGameTime.TotalSeconds));
+
+        gameStatesToAdd.ForEach(activeStates.Add);
+        gameStatesToRemove.ForEach(state => activeStates.Remove(state));
+        gameStatesToAdd.Clear();
+        gameStatesToRemove.Clear();
 
         base.Update(gameTime);
     }
@@ -70,7 +85,7 @@ internal class LDGame : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(clearColor);
-        ActiveStates.ForEach(state => state.Draw((float)gameTime.ElapsedGameTime.TotalSeconds));
+        activeStates.ForEach(state => state.Draw((float)gameTime.ElapsedGameTime.TotalSeconds));
 
         base.Draw(gameTime);
     }

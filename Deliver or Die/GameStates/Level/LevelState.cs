@@ -1,4 +1,5 @@
-﻿using DeliverOrDie.Systems;
+﻿using DeliverOrDie.GameStates.UpgradeMenu;
+using DeliverOrDie.Systems;
 using DeliverOrDie.UI;
 using DeliverOrDie.UI.Elements;
 
@@ -19,17 +20,20 @@ internal class LevelState : GameState
     private readonly List<Entity> deliverySpots = new();
 
     private LevelFactory factory;
-    private Entity player;
     private DirectionMarker directionMarker;
     private Timer timer;
 
     public TimeToLiveSystem TimeToLiveSystem { get; private set; }
-
     public int QuestDeliverySpotIndex { get; private set; }
+    public Entity Player { get; private set; }
 
     public void CompleteDelivery()
     {
-        // TODO: upgrade
+        Enable = false;
+        var upgradeMenuState = new UpgradeMenuState(this);
+        upgradeMenuState.Initialize(Game);
+        Game.AddGameState(upgradeMenuState);
+
         GenerateDeliveryQuest(QuestDeliverySpotIndex);
         timer.Time = deliveryTime;
     }
@@ -51,7 +55,7 @@ internal class LevelState : GameState
         UpdateSystems
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
-            .Add(new ZombieSystem(this, player))
+            .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
             .Add(new CollisionSystem(this))
             .Add(new AnimationSystem(this))
@@ -67,18 +71,18 @@ internal class LevelState : GameState
         UILayer.AddElement(new AmmoCounter()
         {
             Offset = new Vector2(0.0f, Game.Resolution.Y - 20.0f),
-            TrackedEntity = player,
+            TrackedEntity = Player,
         });
 
         UILayer.AddElement(new HealthBar()
         {
             Offset = new Vector2(Game.Resolution.X / 2.0f, Game.Resolution.Y - 10.0f),
-            TrackedEntity = player,
+            TrackedEntity = Player,
         });
 
         directionMarker = new DirectionMarker()
         {
-            TrackedEntity = player,
+            TrackedEntity = Player,
         };
         UILayer.AddElement(directionMarker);
 
@@ -96,13 +100,13 @@ internal class LevelState : GameState
 
     private void CreateEntities()
     {
-        player = factory.CreatePlayer();
-        //factory.CreateZombie(new Vector2(500.0f, 0.0f));
+        Player = factory.CreatePlayer();
+        factory.CreateZombie(new Vector2(0.0f, 500.0f));
 
         CreateDeliverySpot(new Vector2(-500.0f, 0.0f));
         CreateDeliverySpot(new Vector2(500.0f, 0.0f));
 
-        Camera.Target = player;
+        Camera.Target = Player;
 
         Game.SoundManager["AmbientNatureOutside"].PlayLoop();
     }

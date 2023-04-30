@@ -40,4 +40,5 @@ internal struct Player
     public bool Shooting;
     public int Ammo;
     public int MaxAmmo;
+    public float Damage;
 }

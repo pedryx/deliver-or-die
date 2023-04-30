@@ -70,12 +70,14 @@ internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, 
         if (currentMovement && !lastMovement)
         {
             movement.Speed = player.MoveSpeed;
-            animation.Frames = Animations.Player.Move;
+            if (!player.Reloading)
+                animation.Frames = Animations.Player.Move;
         }
         if (!currentMovement && lastMovement)
         {
             movement.Speed = 0.0f;
-            animation.Frames = Animations.Player.Idle;
+            if (!player.Reloading)
+                animation.Frames = Animations.Player.Idle;
         }
 
         Vector2 lookDirection = mouseState.Position.ToVector2() - GameState.Game.Resolution / 2;
@@ -90,7 +92,12 @@ internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, 
                 player.ShootingElapsed = 0.0f;
                 player.Shooting = false;
                 if (!player.Reloading)
-                    animation.Frames = Animations.Player.Idle;
+                {
+                    if (currentMovement)
+                        animation.Frames = Animations.Player.Move;
+                    else
+                        animation.Frames = Animations.Player.Idle;
+                }
             }
         }
 
@@ -102,7 +109,10 @@ internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, 
                 player.ReloadingElapsed = 0.0f;
                 player.Reloading = false;
                 animation.TimePerFrame = player.AnimationTimePerFrame;
-                animation.Frames = Animations.Player.Idle;
+                if (currentMovement)
+                    animation.Frames = Animations.Player.Move;
+                else
+                    animation.Frames = Animations.Player.Idle;
                 player.Ammo = player.MaxAmmo;
             }
         }
