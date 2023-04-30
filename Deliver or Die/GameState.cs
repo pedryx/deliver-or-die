@@ -1,4 +1,6 @@
-﻿using HypEcs;
+﻿using DeliverOrDie.UI;
+
+using HypEcs;
 
 namespace DeliverOrDie;
 /// <summary>
@@ -15,6 +17,7 @@ internal class GameState
     /// Camera local to this game state.
     /// </summary>
     public Camera Camera { get; private set; }
+    public UILayer UILayer { get; private set; }
 
     /// <summary>
     /// Systems used in update call.
@@ -38,6 +41,7 @@ internal class GameState
     {
         Camera = new Camera(this);
         Game = game;
+        UILayer = new UILayer(this);
         Initialize();
     }
 
