@@ -84,7 +84,7 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
 
         transform2.Position += direction * distance;
     }
-
+    
     private void DealDamage(float damage, ref Transform transform, ref Health health)
     {
         health.Current -= damage;

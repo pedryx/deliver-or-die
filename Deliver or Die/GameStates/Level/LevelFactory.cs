@@ -119,7 +119,11 @@ internal class LevelFactory
                 Max = 5.0f,
                 Current = 5.0f,
                 EntityIndex = gameState.GetNextIndex(),
-                // TODO: player on dead
+                OnDead = (position) =>
+                {
+                    gameState.Camera.Target = null;
+                    // TODO: player on dead
+                },
             })
             .Id();
 
@@ -149,6 +153,7 @@ internal class LevelFactory
             {
                 MoveSpeed = 100.0f,
                 AttackDuration = animationTimePerFrame * Animations.Zombie.Attack.Count,
+                Damage = 1.0f,
             })
             .Add(new Collider()
             {

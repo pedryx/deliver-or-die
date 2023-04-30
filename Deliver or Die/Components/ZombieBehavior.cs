@@ -18,6 +18,7 @@ internal struct ZombieBehavior
     /// How many seconds elapsed from zombie's last action.
     /// </summary>
     public float Elapsed;
+    public float Damage;
 
     /// <summary>
     /// Represent stages of zombie behavior.

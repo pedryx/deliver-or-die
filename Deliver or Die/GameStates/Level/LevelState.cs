@@ -59,5 +59,10 @@ internal class LevelState : GameState
             Offset = new Vector2(0.0f, Game.Resolution.Y - 20.0f),
             TrackedEntity = player,
         });
+        UILayer.AddElement(new HealthBar()
+        {
+            Offset = new Vector2(Game.Resolution.X / 2.0f, Game.Resolution.Y - 10.0f),
+            TrackedEntity = player,
+        });
     }
 }

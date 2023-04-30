@@ -123,9 +123,16 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
         }
     }
 
-    private void DealDamageToPlayer(ZombieComponents zombie)
+    private void DealDamageToPlayer(ZombieComponents components)
     {
-        // TODO: deal damage to player
+        ref Health health = ref ecsWorld.GetComponent<Health>(player);
+
+        health.Current -= components.Zombie.Damage;
+        if (health.Current <= 0)
+        {
+            health.OnDead?.Invoke(ecsWorld.GetComponent<Transform>(player).Position);
+            GameState.DestroyEntity(health.EntityIndex);
+        }
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
+using System;
 using System.Collections.Generic;
 
 namespace DeliverOrDie.UI;
@@ -23,7 +24,7 @@ internal abstract class UIElement
     /// <summary>
     /// Get size of an element.
     /// </summary>
-    public virtual Vector2 Size { get; }
+    public virtual Vector2 Size => throw new NotImplementedException();
 
     protected virtual void Initialize() { }
 
