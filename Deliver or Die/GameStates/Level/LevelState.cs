@@ -16,6 +16,9 @@ namespace DeliverOrDie.GameStates.Level;
 /// </summary>
 internal class LevelState : GameState
 {
+    private const float zombieSpeedDifficultyMultiplier = 1.1f;
+    private const float zombieDamageDifficultyMultiplier = 1.15f;
+    private const float zombieHealthDifficultyUpgrade = 0.75f;
     /// <summary>
     /// Time until delivery expires in seconds.
     /// </summary>
@@ -35,6 +38,7 @@ internal class LevelState : GameState
     /// Timer which counts time until delivery expires.
     /// </summary>
     private Timer timer;
+    private ZombieSpawningSystem zombieSpawningSystem;
 
     /// <summary>
     /// index of current delivery spot quest location.
@@ -53,6 +57,10 @@ internal class LevelState : GameState
 
         GenerateDeliveryQuest(QuestDeliverySpotIndex);
         timer.Time = deliveryTime;
+
+        zombieSpawningSystem.ZombieSpeed *= zombieSpeedDifficultyMultiplier;
+        zombieSpawningSystem.ZombieDamage *= zombieDamageDifficultyMultiplier;
+        zombieSpawningSystem.ZombieHealth += zombieHealthDifficultyUpgrade;
     }
 
     public void CreateDeliverySpot(Vector2 position)
@@ -83,11 +91,13 @@ internal class LevelState : GameState
 
     private void CreateSystems()
     {
+        zombieSpawningSystem = new ZombieSpawningSystem(this, factory);
+
         UpdateSystems
             .Add(new TimeToLiveSystem(this))
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
-            .Add(new ZombieSpawningSystem(this, factory))
+            .Add(zombieSpawningSystem)
             .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
             .Add(new CollisionSystem(this))

@@ -31,6 +31,19 @@ internal class ZombieSpawningSystem : GameSystem
     /// </summary>
     public float SpawningSpeed = 10.0f;
 
+    /// <summary>
+    /// Movement speed of new zombies.
+    /// </summary>
+    public float ZombieSpeed = 100.0f;
+    /// <summary>
+    /// Damage of new zombies.
+    /// </summary>
+    public float ZombieDamage = 1.0f;
+    /// <summary>
+    /// Health of new zombies.
+    /// </summary>
+    public float ZombieHealth = 1.0f;
+
     public ZombieSpawningSystem(LevelState levelState, LevelFactory factory)
         : base(levelState)
     {
@@ -59,7 +72,7 @@ internal class ZombieSpawningSystem : GameSystem
             }
             while (Vector2.Distance(playerTransform.Position, position) <= minPlayerSpawnDistance);
 
-            factory.CreateZombie(position);
+            factory.CreateZombie(position, ZombieSpeed, ZombieDamage, ZombieHealth);
         }
     }
 }

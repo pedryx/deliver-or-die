@@ -102,9 +102,9 @@ internal class LevelFactory
         return player;
     }
 
-    public Entity CreateZombie(Vector2 position)
+    public Entity CreateZombie(Vector2 position, float speed, float damage, float health)
     {
-        const float animationTimePerFrame = 0.125f;
+        float animationTimePerFrame = 0.125f * (speed / 100.0f);
 
         Entity zombie = CreateEntity()
             .Add(new Transform(position)
@@ -118,13 +118,13 @@ internal class LevelFactory
             {
                 MoveSpeed = 100.0f,
                 AttackDuration = animationTimePerFrame * Animations.Zombie.Attack.Count,
-                Damage = 1.0f,
+                Damage = damage,
             })
             .Add(new Collider(entityIndex, 50.0f, Collider.Layers.Zombie)
             {
                 CollisionLayer = Collider.Layers.Zombie,
             })
-            .Add(new Health(1.0f)
+            .Add(new Health(health)
             {
                 OnDead = (sender, e) =>
                 {
