@@ -20,7 +20,7 @@ internal class LDGame : Game
     /// <summary>
     /// Color used for clear graphics buffer.
     /// </summary>
-    private readonly Color clearColor = new(0, 82, 22);
+    private readonly Color clearColor = Color.Black;//new(0, 82, 22);
 
     private List<GameState> activeStates = new() { new LevelState() };
     /// <summary>

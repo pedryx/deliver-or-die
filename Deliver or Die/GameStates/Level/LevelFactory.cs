@@ -145,7 +145,7 @@ internal class LevelFactory
             .Add(new Appearance(textureManager["circle"], 0.5f)
             {
                 Color = Color.DarkGray,
-                LayerDepth = 1.0f,
+                LayerDepth = 0.5f,
             })
             .Add(new Collider(entityIndex, 128.0f, Collider.Layers.DeliverySpot))
             .Add(new DeliverySpot(deliverySpotIndex))

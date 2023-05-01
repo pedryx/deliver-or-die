@@ -1,6 +1,8 @@
-﻿using DeliverOrDie.Extensions;
+﻿using DeliverOrDie.Components;
+using DeliverOrDie.Extensions;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +20,7 @@ internal class WorldGenerator
     private const int deliverySpotCount = 20;
 
     // TODO: border
-    public static readonly Vector2 WorldSize = new(30_000.0f);
+    public static readonly Vector2 WorldSize = new(30_720.0f);
 
     private static LevelState state;
     private static LevelFactory factory;
@@ -28,10 +30,31 @@ internal class WorldGenerator
         WorldGenerator.state = state;
         WorldGenerator.factory = factory;
 
+        GenerateGrassTiles();
         GenerateDeliverySpots();
 
         WorldGenerator.state = null;
         WorldGenerator.factory = null;
+    }
+
+    private static void GenerateGrassTiles()
+    {
+        Texture2D grassTexture = state.Game.TextureManager["tileable_grass_00"];
+
+        for (int x = 0; x < WorldSize.X; x += grassTexture.Width)
+        {
+            for (int y = 0; y < WorldSize.Y; y += grassTexture.Height)
+            {
+                state.ECSWorld.Spawn()
+                    .Add(new Transform(new Vector2(x, y) - WorldSize / 2.0f))
+                    .Add(new Appearance(grassTexture)
+                    {
+                        Origin = Vector2.Zero,
+                        LayerDepth = 1.0f,
+                    })
+                    .Id();
+            }
+        }
     }
 
     private static void GenerateDeliverySpots()
