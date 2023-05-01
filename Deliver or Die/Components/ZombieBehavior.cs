@@ -10,6 +10,7 @@ internal struct ZombieBehavior
     /// Current behavior state.
     /// </summary>
     public BehaviorState State;
+
     /// <summary>
     /// How many seconds it takes for zombie to attack. Zombie deal damage at the start of attack.
     /// </summary>
@@ -19,6 +20,13 @@ internal struct ZombieBehavior
     /// </summary>
     public float Elapsed;
     public float Damage;
+
+    public int EntityIndex;
+
+    public ZombieBehavior(int entityIndex)
+    {
+        EntityIndex = entityIndex;
+    }
 
     /// <summary>
     /// Represent stages of zombie behavior.

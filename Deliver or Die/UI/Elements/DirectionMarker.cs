@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace DeliverOrDie.UI.Elements;
 internal class DirectionMarker : UIElement
 {
-    private const float offset = 120.0f;
+    private const float offset = 140.0f;
 
     private Image marker;
 
@@ -23,6 +23,7 @@ internal class DirectionMarker : UIElement
             Texture = texture,
             SourceRectangle = new Rectangle(0, 0, 64, 64),
             Origin = new Vector2(32.0f, 32.0f),
+            Scale = 0.7f,
         };
 
         AddChild(marker);

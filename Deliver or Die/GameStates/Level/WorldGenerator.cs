@@ -1,19 +1,40 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DeliverOrDie.Extensions;
+
+using Microsoft.Xna.Framework;
 
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DeliverOrDie.GameStates.Level;
+/// <summary>
+/// Generates environment.
+/// </summary>
 internal class WorldGenerator
 {
+    /// <summary>
+    /// Minimal distance between delivery spots.
+    /// </summary>
     private const float minDeliverySpotsDistance = 5_000.0f;
+    private const int deliverySpotCount = 20;
 
     // TODO: border
     public static readonly Vector2 WorldSize = new(30_000.0f);
 
-    private static int deliverySpotCount = 20;
+    private static LevelState state;
+    private static LevelFactory factory;
 
     public static void Generate(LevelState state, LevelFactory factory)
+    {
+        WorldGenerator.state = state;
+        WorldGenerator.factory = factory;
+
+        GenerateDeliverySpots();
+
+        WorldGenerator.state = null;
+        WorldGenerator.factory = null;
+    }
+
+    private static void GenerateDeliverySpots()
     {
         var positions = new List<Vector2>();
 

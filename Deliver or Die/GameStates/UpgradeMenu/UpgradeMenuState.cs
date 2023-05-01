@@ -24,6 +24,6 @@ internal class UpgradeMenuState : GameState
     public void Close()
     {
         Game.RemoveGameState(this);
-        levelState.Enable = true;
+        levelState.Enabled = true;
     }
 }

@@ -46,6 +46,7 @@ public class TextureManager
 
                 string name = file.Split('/', '\\').Last().Split('.').First();
                 Texture2D texture = Texture2D.FromFile(graphicsDevice, file);
+                texture.Name = name;
 
                 textures.Add(name, texture);
                 return texture;

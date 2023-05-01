@@ -2,7 +2,7 @@
 
 using System;
 
-namespace DeliverOrDie;
+namespace DeliverOrDie.Extensions;
 internal static class RandomExtension
 {
     /// <summary>

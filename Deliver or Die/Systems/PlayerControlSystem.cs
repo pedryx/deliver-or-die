@@ -147,7 +147,7 @@ internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, 
                     Vector2 spawnDirection = new(MathF.Cos(spawnDirectionAngle), MathF.Sin(spawnDirectionAngle));
                     Vector2 spawnPosition = transform.Position + spawnDirection * bulletPositionOffset;
 
-                    factory.CreateBullet(spawnPosition, transform.Rotation);
+                    factory.CreateBullet(spawnPosition, transform.Rotation, player.Damage);
                     player.Ammo--;
                 }
             }

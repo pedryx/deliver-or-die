@@ -1,43 +1,20 @@
-﻿using HypEcs;
-
-using System.Collections.Generic;
+﻿using DeliverOrDie.Components;
 
 namespace DeliverOrDie.Systems;
 /// <summary>
-/// Destroy added entities after their time to live expires.
+/// Handles entities with <see cref="TimeToLive"/> component. They will be destroyed when their
+/// <see cref="TimeToLive.Time"/> reaches zero.
 /// </summary>
-internal class TimeToLiveSystem : GameSystem
+internal class TimeToLiveSystem : GameSystem<TimeToLive>
 {
-    private readonly List<TimeToLivePair> entities = new();
-
     public TimeToLiveSystem(GameState gameState)
         : base(gameState) { }
 
-    protected override void Update()
+    protected override void Update(ref TimeToLive timeToLive)
     {
-        for (int i = entities.Count - 1; i >= 0; i--)
-        {
-            entities[i].ReamingTime -= GameState.Elapsed * GameState.Game.Speed;
-            if (entities[i].ReamingTime <= 0.0f)
-            {
-                GameState.ECSWorld.Despawn(entities[i].Entity);
-                entities.RemoveAt(i);
-            }
-        }
-    }
+        timeToLive.Time -= GameState.Elapsed * GameState.Game.Speed;
 
-    public void Add(Entity entity, float time)
-    {
-        entities.Add(new TimeToLivePair()
-        {
-            Entity = entity,
-            ReamingTime = time,
-        });
-    }
-
-    private class TimeToLivePair
-    {
-        public Entity Entity;
-        public float ReamingTime;
+        if (timeToLive.Time <= 0.0f)
+            GameState.DestroyEntity(timeToLive.EntityIndex);
     }
 }

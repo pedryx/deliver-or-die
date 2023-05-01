@@ -1,122 +1,116 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.Events;
+using DeliverOrDie.Extensions;
 
 using HypEcs;
 
 using Microsoft.Xna.Framework;
 
-using System;
-
 namespace DeliverOrDie.Systems;
+
+/// <summary>
+/// Handles collision between entities.
+/// </summary>
 internal class CollisionSystem : GameSystem<Transform, Collider>
 {
-    private readonly Query<Transform, Collider, Movement, Health> movementHealthQuery;
-    private readonly Query<Transform, Collider, Movement> movementQuery;
-    private readonly Query<Transform, Collider, Health> healthQuery;
-    private readonly Query<Transform, Collider> reactionsOnlyQuery;
+    private readonly Query<Transform, Collider> query;
+    private readonly World ecsWorld;
 
     public CollisionSystem(GameState gameState)
         : base(gameState)
     {
-        movementHealthQuery = gameState.ECSWorld.Query<Transform, Collider, Movement, Health>().Build();
-        movementQuery = gameState.ECSWorld.Query<Transform, Collider, Movement>().Not<Health>().Build();
-        healthQuery = gameState.ECSWorld.Query<Transform, Collider, Health>().Not<Movement>().Build();
-        reactionsOnlyQuery = gameState.ECSWorld.Query<Transform, Collider>().Not<Movement>().Not<Health>().Build();
+        ecsWorld = gameState.ECSWorld;
+        query = ecsWorld.Query<Transform, Collider>().Build();
     }
 
-    protected override void Update(ref Transform transform, ref Collider collider)
+    protected override void Update(ref Transform transformReference, ref Collider colliderReference)
     {
-        Vector2 position = transform.Position;
-        float radius = collider.Radius;
-        Collider.Layers damageLayer = collider.DamageLayer;
-        Collider.Layers collisionLayer = collider.CollisionLayer;
-        Collider.Layers reactionLayer = collider.ReactionLayer;
-        float damage = collider.Damage;
-        Action<object> reaction = collider.Reaction;
+        Transform transform = transformReference;
+        Collider collider = colliderReference;
 
-        movementHealthQuery.Run((count, transforms, colliders, movements, healths) =>
+        query.Run((count, transforms, colliders) =>
         {
-            HandleCollisions(position, radius, transforms, colliders, (i) =>
+            for (int i = 0; i < count; i++)
             {
-                if ((reactionLayer & colliders[i].Layer) > 0)
-                    reaction?.Invoke(colliders[i].Data);
-                if ((collisionLayer & colliders[i].Layer) > 0)
-                    RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
-                if ((damageLayer & colliders[i].Layer) > 0)
-                    DealDamage(damage, ref transforms[i], ref healths[i]);
-            });
-        });
+                if (collider.EntityIndex == colliders[i].EntityIndex)
+                    continue;
 
-        movementQuery.Run((count, transforms, colliders, movements) =>
-        {
-            HandleCollisions(position, radius, transforms, colliders, (i) =>
-            {
-                if ((reactionLayer & colliders[i].Layer) > 0)
-                    reaction?.Invoke(colliders[i].Data);
-                if ((collisionLayer & colliders[i].Layer) > 0)
-                    RevertMovement(position, radius, colliders[i].Radius, movements[i].Speed, ref transforms[i]);
-            });
-        });
+                var components = new CollisionComponents()
+                {
+                    Transform1 = transform,
+                    Collider1 = collider,
+                    Transform2 = transforms[i],
+                    Collider2 = colliders[i],
+                };
 
-        healthQuery.Run((count, transforms, colliders, healths) =>
-        {
-            HandleCollisions(position, radius, transforms, colliders, (i) =>
-            {
-                if ((reactionLayer & colliders[i].Layer) > 0)
-                    reaction?.Invoke(colliders[i].Data);
-                if ((damageLayer & colliders[i].Layer) > 0)
-                    DealDamage(damage, ref transforms[i], ref healths[i]);
-            });
-        });
-
-        reactionsOnlyQuery.Run((count, transforms, colliders) =>
-        {
-            HandleCollisions(position, radius, transforms, colliders, (i) =>
-            {
-                if ((reactionLayer & colliders[i].Layer) > 0)
-                    reaction?.Invoke(colliders[i].Data);
-            });
+                HandleCollisions(components);
+            }
         });
     }
 
-    private static void HandleCollisions
-    (
-        Vector2 position,
-        float radius,
-        Transform[] transforms,
-        Collider[] colliders,
-        Action<int> action
-    )
+    private void HandleCollisions(CollisionComponents components)
     {
-        for (int i = 0; i < transforms.Length; i++)
-        {
-            float distance = Vector2.Distance(position, transforms[i].Position);
-
-            if (distance < radius + colliders[i].Radius)
-                action.Invoke(i);
-        }
-    }
-
-    private static void RevertMovement(Vector2 position1, float radius1, float radius2, float speed2, ref Transform transform2)
-    {
-        if (speed2 == 0.0f)
+        float distance = Vector2.Distance(components.Transform1.Position, components.Transform2.Position);
+        if (distance > components.Collider1.Radius + components.Collider2.Radius)
             return;
 
-        Vector2 direction = transform2.Position - position1;
-        direction.Normalize();
+        Entity entity1 = GameState.GetEntity(components.Collider1.EntityIndex);
+        Entity entity2 = GameState.GetEntity(components.Collider2.EntityIndex);
 
-        float distance = radius1 + radius2 - Vector2.Distance(transform2.Position, position1);
+        // reaction
+        if ((components.Collider1.ReactionLayer & components.Collider2.Layer) > 0)
+            components.Collider1.OnCollision?.Invoke(this, new CollisionEventArgs(entity1, entity2));
 
-        transform2.Position += direction * distance;
-    }
-    
-    private void DealDamage(float damage, ref Transform transform, ref Health health)
-    {
-        health.Current -= damage;
-
-        if (health.Current < 0)
+        // damage
+        if ((components.Collider1.DamageLayer & components.Collider2.Layer) > 0)
         {
-            health.OnDead?.Invoke(transform.Position);
-            GameState.DestroyEntity(health.EntityIndex);
+            if (ecsWorld.HasComponent<Health>(entity2))
+            {
+                ref Health health2 = ref ecsWorld.GetComponent<Health>(entity2);
+
+                health2.Current -= components.Collider1.Damage;
+
+                if (health2.Current <= 0.0f)
+                {
+                    health2.OnDead?.Invoke(this, new EntityEventArgs(entity2));
+                    GameState.DestroyEntity(components.Collider2.EntityIndex);
+                }
+            }
         }
+
+        // impact
+        if ((components.Collider1.CollisionLayer & components.Collider2.Layer) > 0)
+        {
+            if (ecsWorld.HasComponent<Movement>(entity1))
+            {
+                ref Movement movement = ref ecsWorld.GetComponent<Movement>(entity1);
+                ref Transform transform = ref ecsWorld.GetComponent<Transform>(entity1);
+
+                if (movement.Speed != 0.0f)
+                {
+                    Vector2 direction = components.Transform1.Position - components.Transform2.Position;
+
+                    if (direction == Vector2.Zero)
+                        direction = MathUtils.AngleToVector(GameState.Game.Random.NextAngle());
+
+                    direction.Normalize();
+
+
+                    float offset = components.Collider1.Radius + components.Collider2.Radius - distance;
+                    transform.Position += direction * offset;
+                }
+            }
+
+            if (components.Collider1.DestroyOnImpact)
+                GameState.DestroyEntity(components.Collider1.EntityIndex);
+        }
+    }
+
+    private struct CollisionComponents
+    {
+        public Transform Transform1;
+        public Collider Collider1;
+        public Transform Transform2;
+        public Collider Collider2;
     }
 }

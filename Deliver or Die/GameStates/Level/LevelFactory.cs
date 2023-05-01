@@ -1,11 +1,10 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.Extensions;
 using DeliverOrDie.Resources;
-using DeliverOrDie.Systems;
 
 using HypEcs;
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 using System;
 
@@ -16,124 +15,90 @@ namespace DeliverOrDie.GameStates.Level;
 internal class LevelFactory
 {
     private readonly World ecsWorld;
-    private readonly TextureManager textures;
-    private readonly TimeToLiveSystem timeToLiveSystem;
+    private readonly TextureManager textureManager;
     private readonly LevelState levelState;
+    private readonly Random random;
+
+    private int entityIndex;
 
     public LevelFactory(LevelState levelState)
     {
         ecsWorld = levelState.ECSWorld;
-        textures = levelState.Game.TextureManager;
-        timeToLiveSystem = levelState.TimeToLiveSystem;
+        textureManager = levelState.Game.TextureManager;
+        random = levelState.Game.Random;
         this.levelState = levelState;
     }
 
-    public Entity CreateSquare(Vector2 position, float size, Color color, float layerDepth = 0.0f)
+    private EntityBuilder CreateEntity()
     {
-        Entity square = ecsWorld.Spawn()
-            .Add(Transform.Create(position))
-            .Add(new Appearance()
-            {
-                Texture = textures.Square,
-                Color = color,
-                ScaleOffset = size,
-                Origin = new Vector2(0.5f),
-                LayerDepth = layerDepth
-            })
-            .Id();
-
-        return square;
+        entityIndex = levelState.GetNextIndex();
+        return ecsWorld.Spawn();
     }
 
-    public Entity CreateBullet(Vector2 position, float direction)
+    public Entity CreateBullet(Vector2 position, float direction, float damage)
     {
-        Texture2D bulletTexture = textures["bullet"];
-
-        Entity bullet = ecsWorld.Spawn()
-            .Add(new Transform()
+        Entity bullet = CreateEntity()
+            .Add(new Transform(position)
             {
-                Position = position,
                 Rotation = direction,
-                Scale = 1.0f,
             })
-            .Add(new Appearance()
+            .Add(new Appearance(textureManager["bullet"], 0.007f)
             {
-                Texture = bulletTexture,
                 Color = Color.Gold,
-                ScaleOffset = 0.007f,
-                Origin = new Vector2(bulletTexture.Width, bulletTexture.Height) / 2.0f,
-                RotationOffset = - MathF.PI / 2.0f,
+                RotationOffset = -MathF.PI / 2.0f,
             })
-            .Add(new Movement()
+            .Add(new Movement(3000.0f, direction))
+            .Add(new Collider(entityIndex, 1.0f, Collider.Layers.Bullet, damage)
             {
-                Speed = 3000.0f,
-                Direction = direction,
-            })
-            .Add(new Collider()
-            {
-                Radius = 1.0f,
-                Damage = 1.0f,
-                Layer = Collider.Layers.Bullet,
                 DamageLayer = Collider.Layers.Zombie,
+                CollisionLayer = Collider.Layers.Zombie,
+                DestroyOnImpact = true,
             })
+            .Add(new TimeToLive(entityIndex, 5.0f))
             .Id();
-        timeToLiveSystem.Add(bullet, 5.0f);
+        levelState.AddEntity(bullet);
 
         return bullet;
     }
 
     public Entity CreatePlayer()
-    {
-        Entity player = ecsWorld.Spawn()
-            .Add(Transform.Create())
-            .Add(new Appearance()
+    { 
+        Entity player = CreateEntity()
+            .Add(new Transform())
+            .Add(new Appearance(textureManager["survivor-idle_rifle_0"], 0.5f)
             {
-                Texture = textures["survivor-idle_rifle_0"],
-                ScaleOffset = 0.5f,
-                Origin = new Vector2(90, 120),
-                Color = Color.White,
+                Origin = new Vector2(90.0f, 120.0f),
             })
-            .Add(new Player()
+            .Add(new Player(entityIndex, 5)
             {
                 MoveSpeed = 500.0f,
                 ReloadTime = 2.0f,
                 ShootingSpeed = 5.0f,
-                Ammo = 5,
-                MaxAmmo = 5,
                 Damage = 1.0f,
             })
-            .Add(new Animation()
+            .Add(new Animation(Animations.Player.Idle, 0.06f))
+            .Add(new Collider(entityIndex, 30.0f, Collider.Layers.Player)
             {
-                TimePerFrame = 0.06f,
-                Frames = Animations.Player.Idle,
-            })
-            .Add(new Collider()
-            {
-                Layer = Collider.Layers.Player,
-                Radius = 30.0f,
                 CollisionLayer = Collider.Layers.Zombie | Collider.Layers.Obstacle,
                 ReactionLayer = Collider.Layers.DeliverySpot,
-                Reaction = (data) =>
+                OnCollision = (sender, e) =>
                 {
-                    if ((int)data == levelState.QuestDeliverySpotIndex)
+                    if (ecsWorld.GetComponent<DeliverySpot>(e.Target).Index == levelState.QuestDeliverySpotIndex)
                         levelState.CompleteDelivery();
                 },
             })
-            .Add<Movement>()
-            .Add(new Health()
+            .Add(new Movement())
+            .Add(new Health(4.0f)
             {
-                Max = 4.0f,
-                Current = 4.0f,
-                EntityIndex = levelState.GetNextIndex(),
-                OnDead = (position) =>
+                OnDead = (sender, e) =>
                 {
                     levelState.Camera.Target = null;
-                    // TODO: player on dead
-                },
+                    levelState.GameOver();
+                }
             })
             .Id();
-
         levelState.AddEntity(player);
+
         return player;
     }
 
@@ -141,70 +106,52 @@ internal class LevelFactory
     {
         const float animationTimePerFrame = 0.125f;
 
-        Entity zombie = ecsWorld.Spawn()
-            .Add(new Transform()
+        Entity zombie = CreateEntity()
+            .Add(new Transform(position)
             {
-                Position = position,
-                Rotation = levelState.Game.Random.NextAngle(),
-                Scale = 1.0f,
+                Rotation = random.NextAngle(),
             })
-            .Add(Appearance.Create(textures["skeleton-idle_0"], 0.44f))
-            .Add(new Animation()
-            {
-                TimePerFrame = animationTimePerFrame,
-                Frames = Animations.Zombie.Idle,
-            })
+            .Add(new Appearance(textureManager["skeleton-idle_0"], 0.44f))
+            .Add(new Animation(Animations.Zombie.Idle, animationTimePerFrame))
             .Add<Movement>()
-            .Add(new ZombieBehavior()
+            .Add(new ZombieBehavior(entityIndex)
             {
                 MoveSpeed = 100.0f,
                 AttackDuration = animationTimePerFrame * Animations.Zombie.Attack.Count,
                 Damage = 1.0f,
             })
-            .Add(new Collider()
+            .Add(new Collider(entityIndex, 50.0f, Collider.Layers.Zombie)
             {
-                Layer = Collider.Layers.Zombie,
-                Radius = 50.0f,
-                CollisionLayer = Collider.Layers.Player | Collider.Layers.Obstacle,
+                CollisionLayer = Collider.Layers.Zombie,
             })
-            .Add(new Health()
+            .Add(new Health(1.0f)
             {
-                Max = 1.0f,
-                Current = 1.0f,
-                EntityIndex = levelState.GetNextIndex(),
-                OnDead = (position) =>
+                OnDead = (sender, e) =>
                 {
-                    levelState.Game.Statistics.Increment("zombie killed", 1.0f);
+                    levelState.Game.GameStatistics.Increment(Statistics.ZombiesKilled, 1.0f);
+                    // TODO: spawn corpse
                 }
             })
             .Id();
-
         levelState.AddEntity(zombie);
+
         return zombie;
     }
 
-    public Entity CreateDeliverySpot(Vector2 position, int id)
-    {
-        Texture2D texture = textures["circle"];
-
-        Entity mailBox = ecsWorld.Spawn()
-            .Add(Transform.Create(position))
-            .Add(new Appearance()
+    public Entity CreateDeliverySpot(Vector2 position, int deliverySpotIndex)
+    { 
+        Entity deliverySpot = CreateEntity()
+            .Add(new Transform(position))
+            .Add(new Appearance(textureManager["circle"], 0.5f)
             {
-                Texture = texture,
                 Color = Color.DarkGray,
-                ScaleOffset = 0.5f,
-                Origin = new Vector2(texture.Width, texture.Height) / 2.0f,
                 LayerDepth = 1.0f,
             })
-            .Add(new Collider()
-            {
-                Radius = 128.0f,
-                Layer = Collider.Layers.DeliverySpot,
-                Data = id,
-            })
+            .Add(new Collider(entityIndex, 128.0f, Collider.Layers.DeliverySpot))
+            .Add(new DeliverySpot(deliverySpotIndex))
             .Id();
+        levelState.AddEntity(deliverySpot);
 
-        return mailBox;
+        return deliverySpot;
     }
 }
