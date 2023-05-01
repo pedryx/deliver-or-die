@@ -17,4 +17,7 @@ internal static class RandomExtension
     /// <param name="bounds">Size of bounded space.</param>
     public static Vector2 Nextvector2(this Random random, Vector2 bounds)
         => new Vector2(random.NextSingle(), random.NextSingle()) * bounds;
+
+    public static float NextSingle(this Random random, float minValue, float maxValue)
+        => (maxValue - minValue) * random.NextSingle() + minValue;
 }

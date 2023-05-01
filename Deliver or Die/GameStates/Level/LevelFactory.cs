@@ -20,6 +20,7 @@ internal class LevelFactory
 
     private readonly World ecsWorld;
     private readonly TextureManager textureManager;
+    private readonly SoundManager soundManager;
     private readonly LevelState levelState;
     private readonly Random random;
 
@@ -29,6 +30,7 @@ internal class LevelFactory
     {
         ecsWorld = levelState.ECSWorld;
         textureManager = levelState.Game.TextureManager;
+        soundManager = levelState.Game.SoundManager;
         random = levelState.Game.Random;
         this.levelState = levelState;
     }
@@ -180,6 +182,7 @@ internal class LevelFactory
                     float direction = MathUtils.VectorToAngle(currentPosition - playerPosition);
 
                     CreateBloodSplat(currentPosition, direction, true);
+                    soundManager["bigmonster_die"].Play(0.1f);
                 },
                 OnHit = (sender, e) =>
                 {
@@ -190,6 +193,7 @@ internal class LevelFactory
                     float direction = MathUtils.VectorToAngle(directionVector);
 
                     CreateBloodSplat(currentPosition + directionVector * bloodSpatOffset, direction);
+                    soundManager["qubodupImpactMeat02"].Play(0.1f);
                 }
             })
             .Id();

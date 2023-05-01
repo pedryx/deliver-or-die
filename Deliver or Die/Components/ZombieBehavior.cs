@@ -21,6 +21,11 @@ internal struct ZombieBehavior
     public float Elapsed;
     public float Damage;
 
+    /// <summary>
+    /// How many seconds elapsed from zombie's last sound.
+    /// </summary>
+    public float ElapsedZombieSound;
+
     public int EntityIndex;
 
     public ZombieBehavior(int entityIndex)

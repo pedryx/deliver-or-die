@@ -30,6 +30,23 @@ internal class SoundSequences
                 "Footstep_Dirt_07",
                 "Footstep_Dirt_08",
                 "Footstep_Dirt_09",
-            }, 0.2f);
+            }, 0.15f);
+    }
+
+    public static class Zombie
+    {
+        public static SoundSequence Walk { get; private set; }
+            = new SoundSequence(sounds, new List<string>()
+            {
+                "Footstep_Dirt_01",
+                "Footstep_Dirt_02",
+                "Footstep_Dirt_03",
+                "Footstep_Dirt_04",
+                "Footstep_Dirt_05",
+                "Footstep_Dirt_06",
+                "Footstep_Dirt_07",
+                "Footstep_Dirt_08",
+                "Footstep_Dirt_09",
+            }, 0.6f);
     }
 }

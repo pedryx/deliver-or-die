@@ -1,5 +1,6 @@
 ﻿using DeliverOrDie.Components;
 using DeliverOrDie.Events;
+using DeliverOrDie.Extensions;
 using DeliverOrDie.Resources;
 using HypEcs;
 
@@ -15,6 +16,8 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
 {
     private const float moveDistance = 1000.0f;
     private const float attackDistance = 81.0f;
+    private const float zombieSoundMin = 2.0f;
+    private const float zombieSoundMax = 10.0f;
 
     private readonly Entity player;
     private readonly World ecsWorld;
@@ -76,6 +79,15 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
 
     private void HandleMove(ZombieComponents components)
     {
+        SoundSequences.Zombie.Walk.Play(0.07f);
+
+        components.Zombie.ElapsedZombieSound -= GameState.Elapsed;
+        if (components.Zombie.ElapsedZombieSound <= 0.0f)
+        {
+            GameState.Game.SoundManager["Zombie Sound"].Play(0.1f);
+            components.Zombie.ElapsedZombieSound += GameState.Game.Random.NextSingle(zombieSoundMin, zombieSoundMax);
+        }
+
         if (!NearPlayer(components.Transform.Position, moveDistance))
         {
             components.Movement.Speed = 0.0f;
@@ -126,6 +138,7 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
 
     private void DealDamageToPlayer(ZombieComponents components)
     {
+        GameState.Game.SoundManager["Zombie Attack Sound"].Play(0.1f);
         ref Health health = ref ecsWorld.GetComponent<Health>(player);
 
         health.Current -= components.Zombie.Damage;

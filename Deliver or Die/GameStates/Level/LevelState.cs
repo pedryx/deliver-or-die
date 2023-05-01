@@ -145,7 +145,7 @@ internal class LevelState : GameState
 
         //factory.CreateZombie(new Vector2(-500.0f, 0.0f), 100.0f, 1.0f, 1.0f);
         //factory.CreateZombie(new Vector2(-500.0f, 0.0f), 100.0f, 1.0f, 2.0f);
-        factory.CreateZombie(new Vector2(-500.0f, 0.0f), 100.0f, 1.0f, 10.0f);
+        factory.CreateZombie(new Vector2(-500.0f, 0.0f), 100.0f, 1.0f, 2.0f);
 
         WorldGenerator.Generate(this, factory);
     }
