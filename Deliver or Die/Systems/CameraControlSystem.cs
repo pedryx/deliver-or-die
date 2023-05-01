@@ -14,7 +14,7 @@ internal class CameraControlSystem : GameSystem
     /// <summary>
     /// Minimum zoomed value.
     /// </summary>
-    private const float minZoom = 0.5f;
+    private const float minZoom = 0.6f;
     /// <summary>
     /// Maximum zoomed value.
     /// </summary>

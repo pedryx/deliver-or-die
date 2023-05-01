@@ -98,10 +98,11 @@ internal class LevelState : GameState
             .Add(new TimeToLiveSystem(this))
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
-            .Add(zombieSpawningSystem)
+            //.Add(zombieSpawningSystem)
             .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
             .Add(new CollisionSystem(this))
+            .Add(new BorderCollisionSystem(this, WorldGenerator.WorldSize))
             .Add(new AnimationSystem(this))
         ;
         RenderSystems
