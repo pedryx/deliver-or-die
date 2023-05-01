@@ -33,7 +33,7 @@ internal class Timer : UIElement
             OnFinish?.Invoke(this, new EventArgs());
         }
 
-        label.Text = $"{(int)Time / 60}:{(int)Time % 60}";
+        label.Text = $"{(int)Time / 60,2}:{((int)Time % 60).ToString().PadLeft(2, '0')}";
 
         base.Update(elapsed, position);
     }
