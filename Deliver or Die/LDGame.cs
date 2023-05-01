@@ -12,6 +12,8 @@ namespace DeliverOrDie;
 /// </summary>
 internal class LDGame : Game
 {
+    private const int randomGeneratorSeed = 0;
+
     private readonly List<GameState> activeStates = new() { new LevelState() };
     private readonly List<GameState> gameStatesToAdd = new();
     private readonly List<GameState> gameStatesToRemove = new();
@@ -34,7 +36,7 @@ internal class LDGame : Game
     public TextureManager TextureManager { get; private set; }
     public SoundManager SoundManager { get; private set; } = new();
     public FontManager FontManager { get; private set; }
-    public Random Random { get; private set; } = new();
+    public Random Random { get; private set; } = new(randomGeneratorSeed);
     public Statistics Statistics { get; private set; } = new();
 
     /// <summary>

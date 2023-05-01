@@ -63,6 +63,7 @@ internal class LevelState : GameState
         UpdateSystems
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
+            .Add(new ZombieSpawningSystem(this, factory))
             .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
             .Add(new CollisionSystem(this))
