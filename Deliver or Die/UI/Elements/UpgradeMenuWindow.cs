@@ -1,6 +1,6 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.GameStates;
 using DeliverOrDie.GameStates.Level;
-using DeliverOrDie.GameStates.UpgradeMenu;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

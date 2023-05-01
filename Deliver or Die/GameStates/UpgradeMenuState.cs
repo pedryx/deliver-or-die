@@ -2,7 +2,7 @@
 using DeliverOrDie.UI;
 using DeliverOrDie.UI.Elements;
 
-namespace DeliverOrDie.GameStates.UpgradeMenu;
+namespace DeliverOrDie.GameStates;
 internal class UpgradeMenuState : GameState
 {
     private readonly LevelState levelState;
