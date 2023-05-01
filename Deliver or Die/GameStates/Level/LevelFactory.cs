@@ -5,6 +5,7 @@ using DeliverOrDie.Resources;
 using HypEcs;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using System;
 
@@ -14,6 +15,9 @@ namespace DeliverOrDie.GameStates.Level;
 /// </summary>
 internal class LevelFactory
 {
+    private const int bloodSpatCount = 5;
+    private const float bloodSpatOffset = 80.0f;
+
     private readonly World ecsWorld;
     private readonly TextureManager textureManager;
     private readonly LevelState levelState;
@@ -33,6 +37,47 @@ internal class LevelFactory
     {
         entityIndex = levelState.GetNextIndex();
         return ecsWorld.Spawn();
+    }
+
+    public Entity CreateGrassTile(Texture2D texture, Vector2 position)
+    {
+        Entity grassTile = CreateEntity()
+            .Add(new Transform(position))
+            .Add(new Appearance(texture)
+            {
+                Origin = Vector2.Zero,
+                LayerDepth = 1.0f,
+            })
+            .Add<Background>()
+            .Id();
+        levelState.AddEntity(grassTile);
+
+        return grassTile;
+    }
+
+    public Entity CreateBloodSplat(Vector2 position, float direction, bool dead = false)
+    {
+        int index = levelState.Game.Random.Next(bloodSpatCount);
+
+        Entity bloodSplat = CreateEntity()
+            .Add(new Transform(position)
+            {
+                Rotation = direction,
+            })
+            .Add(new Appearance(textureManager[$"bloodsplats_000{(dead ? 7 : (index + 1))}"])
+            {
+                RotationOffset = dead
+                    ? (-MathHelper.Pi / 2.0f)
+                    : ((index == 4 ? -MathF.PI / 4.0f: (3 * MathF.PI / 4.0f)) - (MathF.PI / 2.0f)),
+                LayerDepth = 0.2f,
+                Color = new Color(0.5f, 0.0f, 0.0f, 0.4f),
+                ScaleOffset = dead ? 1.0f : 0.7f,
+            })
+            .Add<Background>()
+            .Id();
+        levelState.AddEntity(bloodSplat);
+
+        return bloodSplat;
     }
 
     public Entity CreateBullet(Vector2 position, float direction, float damage)
@@ -129,7 +174,22 @@ internal class LevelFactory
                 OnDead = (sender, e) =>
                 {
                     levelState.Game.GameStatistics.Increment(Statistics.ZombiesKilled, 1.0f);
-                    // TODO: spawn corpse
+
+                    Vector2 playerPosition = ecsWorld.GetComponent<Transform>(levelState.Player).Position;
+                    Vector2 currentPosition = ecsWorld.GetComponent<Transform>(e.Self).Position;
+                    float direction = MathUtils.VectorToAngle(currentPosition - playerPosition);
+
+                    CreateBloodSplat(currentPosition, direction, true);
+                },
+                OnHit = (sender, e) =>
+                {
+                    Vector2 playerPosition = ecsWorld.GetComponent<Transform>(levelState.Player).Position;
+                    Vector2 currentPosition = ecsWorld.GetComponent<Transform>(e.Self).Position;
+                    Vector2 directionVector = currentPosition - playerPosition;
+                    directionVector.Normalize();
+                    float direction = MathUtils.VectorToAngle(directionVector);
+
+                    CreateBloodSplat(currentPosition + directionVector * bloodSpatOffset, direction);
                 }
             })
             .Id();
@@ -145,10 +205,11 @@ internal class LevelFactory
             .Add(new Appearance(textureManager["circle"], 0.5f)
             {
                 Color = Color.DarkGray,
-                LayerDepth = 0.5f,
+                LayerDepth = 0.1f,
             })
             .Add(new Collider(entityIndex, 128.0f, Collider.Layers.DeliverySpot))
             .Add(new DeliverySpot(deliverySpotIndex))
+            .Add<Background>()
             .Id();
         levelState.AddEntity(deliverySpot);
 

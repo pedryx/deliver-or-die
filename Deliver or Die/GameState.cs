@@ -118,6 +118,9 @@ internal class GameState
 
         foreach (var i in toRemove)
         {
+            if (!entities.ContainsKey(i))
+                continue;
+
             ECSWorld.Despawn(entities[i]);
             entities.Remove(i);
         }

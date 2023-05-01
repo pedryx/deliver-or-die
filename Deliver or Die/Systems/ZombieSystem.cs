@@ -131,7 +131,11 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
         health.Current -= components.Zombie.Damage;
         if (health.Current <= 0)
         {
-            health.OnDead?.Invoke(this, new EntityEventArgs(GameState.GetEntity(components.Zombie.EntityIndex)));
+            health.OnDead?.Invoke(this, new CollisionEventArgs
+            (
+                GameState.GetEntity(ecsWorld.GetComponent<Player>(player).EntityIndex),
+                GameState.GetEntity(components.Zombie.EntityIndex)
+            ));
             GameState.DestroyEntity(ecsWorld.GetComponent<Player>(player).EntityIndex);
         }
     }

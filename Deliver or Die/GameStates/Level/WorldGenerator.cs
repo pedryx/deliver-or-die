@@ -45,14 +45,7 @@ internal class WorldGenerator
         {
             for (int y = 0; y < WorldSize.Y; y += grassTexture.Height)
             {
-                state.ECSWorld.Spawn()
-                    .Add(new Transform(new Vector2(x, y) - WorldSize / 2.0f))
-                    .Add(new Appearance(grassTexture)
-                    {
-                        Origin = Vector2.Zero,
-                        LayerDepth = 1.0f,
-                    })
-                    .Id();
+                factory.CreateGrassTile(grassTexture, new Vector2(x, y) - WorldSize / 2.0f);
             }
         }
     }

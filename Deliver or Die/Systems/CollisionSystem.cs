@@ -72,8 +72,12 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
 
                 if (health2.Current <= 0.0f)
                 {
-                    health2.OnDead?.Invoke(this, new EntityEventArgs(entity2));
+                    health2.OnDead?.Invoke(this, new CollisionEventArgs(entity2, entity1));
                     GameState.DestroyEntity(components.Collider2.EntityIndex);
+                }
+                else
+                {
+                    health2.OnHit?.Invoke(this, new CollisionEventArgs(entity2, entity1));
                 }
             }
         }

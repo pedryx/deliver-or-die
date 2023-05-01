@@ -14,6 +14,7 @@ internal class LDGame : Game
 {
     private const int randomGeneratorSeed = 0;
 
+    private readonly List<GameState> activeStates = new() { new LevelState() };
     private readonly List<GameState> gameStatesToAdd = new();
     private readonly List<GameState> gameStatesToRemove = new();
 
@@ -21,8 +22,6 @@ internal class LDGame : Game
     /// Color used for clear graphics buffer.
     /// </summary>
     private readonly Color clearColor = Color.Black;//new(0, 82, 22);
-
-    private List<GameState> activeStates = new() { new LevelState() };
     /// <summary>
     /// How fast is the game running, should not affect performance.
     /// </summary>

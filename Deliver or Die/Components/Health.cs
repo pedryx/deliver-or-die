@@ -6,7 +6,8 @@ internal struct Health
     public float Current;
     public float Max;
 
-    public EntityEventHandler OnDead;
+    public CollisionEventHandler OnDead;
+    public CollisionEventHandler OnHit;
 
     public Health(float health)
     {
