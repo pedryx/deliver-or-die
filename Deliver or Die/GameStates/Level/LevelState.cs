@@ -88,6 +88,7 @@ internal class LevelState : GameState
 
         Camera.Target = Player;
         Game.SoundManager["AmbientNatureOutside"].PlayLoop();
+        Game.SoundManager["Iwan Gabovitch - Dark Ambience Loop"].PlayLoop(0.3f);
     }
 
     private void CreateSystems()
@@ -98,7 +99,7 @@ internal class LevelState : GameState
             .Add(new TimeToLiveSystem(this))
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
-            .Add(zombieSpawningSystem)
+            //.Add(zombieSpawningSystem)
             .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
             .Add(new CollisionSystem(this))
@@ -147,6 +148,7 @@ internal class LevelState : GameState
     private void CreateEntities()
     {
         Player = factory.CreatePlayer();
+        factory.CreateZombie(new Vector2(500.0f, 0.0f), 100.0f, 1.0f, 3.0f);
 
         WorldGenerator.Generate(this, factory);
     }

@@ -141,11 +141,11 @@ internal class LevelFactory
                 {
                     levelState.Camera.Target = null;
                     levelState.GameOver();
-                    soundManager["1"].Play(0.1f);
+                    soundManager["1"].Play(0.8f);
                 },
                 OnHit = (sender, e) =>
                 {
-                    soundManager["4"].Play(0.1f);
+                    soundManager["4"].Play(0.8f);
                 }
             })
             .Id();
