@@ -15,6 +15,7 @@ internal class RenderSystem : GameSystem
     private readonly SpriteBatch spriteBatch;
     private readonly Query<Transform, Appearance, Background> firstBatch;
     private readonly Query<Transform, Appearance> secondBatch;
+    private readonly Query<Transform, Appearance, Foreground> thirdBatch;
 
     public RenderSystem(GameState gameState) 
         : base(gameState)
@@ -23,7 +24,8 @@ internal class RenderSystem : GameSystem
         spriteBatch = gameState.Game.SpriteBatch;
 
         firstBatch = GameState.ECSWorld.Query<Transform, Appearance, Background>().Build();
-        secondBatch = GameState.ECSWorld.Query<Transform, Appearance>().Not<Background>().Build();
+        secondBatch = GameState.ECSWorld.Query<Transform, Appearance>().Not<Background>().Not<Foreground>().Build();
+        thirdBatch = GameState.ECSWorld.Query<Transform, Appearance, Foreground>().Build();
     }
 
     protected override void Update()
@@ -42,6 +44,17 @@ internal class RenderSystem : GameSystem
         // render second batch
         spriteBatch.Begin(transformMatrix: camera.GetTransformMatrix());
         secondBatch.Run((count, transforms, appearances) =>
+        {
+            for (int i = 0; i < count; i++)
+            {
+                Draw(ref transforms[i], ref appearances[i]);
+            }
+        });
+        spriteBatch.End();
+
+        // render third batch
+        spriteBatch.Begin(transformMatrix: camera.GetTransformMatrix());
+        thirdBatch.Run((count, transforms, appearances, foregrounds) =>
         {
             for (int i = 0; i < count; i++)
             {

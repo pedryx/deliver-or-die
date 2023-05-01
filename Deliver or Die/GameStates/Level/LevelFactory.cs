@@ -224,4 +224,24 @@ internal class LevelFactory
 
         return deliverySpot;
     }
+
+    public Entity CreateCloud(Vector2 position)
+    {
+        int cloudIndex = random.Next(3);
+
+        Entity cloud = CreateEntity()
+            .Add(new Transform(position))
+            .Add(new Appearance(textureManager[$"cloud{cloudIndex + 1}"], random.NextSingle(0.8f, 2.0f))
+            {
+                Color = new Color(Color.Black, 0.1f),
+                RotationOffset = random.NextAngle(),
+            })
+            .Add(new Movement(random.NextSingle(80.0f, 200.0f), MathF.PI))
+            .Add(new Cloud(entityIndex))
+            .Add<Foreground>()
+            .Id();
+        levelState.AddEntity(cloud);
+
+        return cloud;
+    }
 }

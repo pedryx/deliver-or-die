@@ -99,12 +99,13 @@ internal class LevelState : GameState
             .Add(new TimeToLiveSystem(this))
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
-            //.Add(zombieSpawningSystem)
+            .Add(zombieSpawningSystem)
             .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
             .Add(new CollisionSystem(this))
             .Add(new BorderCollisionSystem(this, WorldGenerator.WorldSize))
             .Add(new AnimationSystem(this))
+            .Add(new CloudsSystem(this, factory, WorldGenerator.WorldSize))
         ;
         RenderSystems
             .Add(new RenderSystem(this))
@@ -148,7 +149,6 @@ internal class LevelState : GameState
     private void CreateEntities()
     {
         Player = factory.CreatePlayer();
-        factory.CreateZombie(new Vector2(500.0f, 0.0f), 100.0f, 1.0f, 3.0f);
 
         WorldGenerator.Generate(this, factory);
     }
