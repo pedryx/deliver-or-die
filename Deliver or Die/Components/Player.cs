@@ -9,6 +9,7 @@ internal struct Player
     /// Speed of player movement in pixels per second.
     /// </summary>
     public float MoveSpeed;
+
     /// <summary>
     /// Determine if player is reloading his gun.
     /// </summary>
@@ -21,11 +22,13 @@ internal struct Player
     /// How long it takes to reload player's gun in seconds.
     /// </summary>
     public float ReloadTime;
+
     /// <summary>
     /// System uses this field to store current time per frame of other player animations when replaced by time per
     /// frame for reload animation.
     /// </summary>
     public float AnimationTimePerFrame;
+
     /// <summary>
     /// Time elapsed from the last moment player shoot from gun.
     /// </summary>
@@ -38,7 +41,27 @@ internal struct Player
     /// Determine if player is currently shooting.
     /// </summary>
     public bool Shooting;
+
+    /// <summary>
+    /// Current number of reaming bullets.
+    /// </summary>
     public int Ammo;
+    /// <summary>
+    /// Maximum number of bullets.
+    /// </summary>
     public int MaxAmmo;
+
+    /// <summary>
+    /// Damage of each fired bullet.
+    /// </summary>
     public float Damage;
+
+    public int EntityIndex;
+
+    public Player(int entityIndex, int ammo)
+    {
+        EntityIndex = entityIndex;
+        MaxAmmo = ammo;
+        Ammo = ammo;
+    }
 }

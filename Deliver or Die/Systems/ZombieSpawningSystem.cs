@@ -1,4 +1,5 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.Extensions;
 using DeliverOrDie.GameStates.Level;
 
 using HypEcs;
@@ -16,16 +17,15 @@ internal class ZombieSpawningSystem : GameSystem
     private readonly LevelFactory factory;
     private readonly Random random;
     private readonly Entity player;
+    /// <summary>
+    /// Minimal distance zombie can be spawned near player.
+    /// </summary>
+    private readonly float minPlayerSpawnDistance;
 
     /// <summary>
     /// How many seconds elapsed from last zombie spawn.
     /// </summary>
     private float elapsed = 0.0f;
-    /// <summary>
-    /// Minimal distance zombie can be spawned near player.
-    /// </summary>
-    private float minPlayerSpawnDistance;
-
     /// <summary>
     /// How many zombies will be spawned per second.
     /// </summary>

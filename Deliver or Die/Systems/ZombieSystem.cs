@@ -1,4 +1,5 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.Events;
 using DeliverOrDie.Resources;
 using HypEcs;
 
@@ -130,8 +131,8 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
         health.Current -= components.Zombie.Damage;
         if (health.Current <= 0)
         {
-            health.OnDead?.Invoke(ecsWorld.GetComponent<Transform>(player).Position);
-            GameState.DestroyEntity(health.EntityIndex);
+            health.OnDead?.Invoke(this, new EntityEventArgs(GameState.GetEntity(components.Zombie.EntityIndex)));
+            GameState.DestroyEntity(ecsWorld.GetComponent<Player>(player).EntityIndex);
         }
     }
 

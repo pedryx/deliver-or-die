@@ -37,7 +37,7 @@ internal class LDGame : Game
     public SoundManager SoundManager { get; private set; } = new();
     public FontManager FontManager { get; private set; }
     public Random Random { get; private set; } = new(randomGeneratorSeed);
-    public Statistics Statistics { get; private set; } = new();
+    public GameStatistics GameStatistics { get; private set; } = new();
 
     /// <summary>
     /// Width and height of game window.
@@ -84,7 +84,7 @@ internal class LDGame : Game
         gameStatesToAdd.Clear();
         gameStatesToRemove.Clear();
 
-        Statistics.Increment("play time", elapsed);
+        GameStatistics.Increment(Statistics.PlayTime, elapsed);
 
         base.Update(gameTime);
     }

@@ -19,13 +19,12 @@ public struct Transform
     /// </summary>
     public float Rotation;
 
-    public static Transform Create(Vector2 position)
-        => new()
-        {
-            Position = position,
-            Scale = 1.0f,
-        };
+    public Transform(Vector2 position)
+    {
+        Scale = 1.0f;
+        Position = position;
+    }
 
-    public static Transform Create()
-        => Create(Vector2.Zero);
+    public Transform()
+        : this(Vector2.Zero) { }
 }

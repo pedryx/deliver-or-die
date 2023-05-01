@@ -1,13 +1,16 @@
-﻿using Microsoft.Xna.Framework;
-
-using System;
+﻿using DeliverOrDie.Events;
 
 namespace DeliverOrDie.Components;
 internal struct Health
 {
     public float Current;
     public float Max;
-    public int EntityIndex;
 
-    public Action<Vector2> OnDead;
+    public EntityEventHandler OnDead;
+
+    public Health(float health)
+    {
+        Max = health;
+        Current = health;
+    }
 }

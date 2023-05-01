@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DeliverOrDie.Extensions;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DeliverOrDie.Components;
@@ -35,19 +36,19 @@ public struct Appearance
     public SpriteEffects SpriteEffects;
     public float LayerDepth;
 
-    public static Appearance Create
-    (
-        Texture2D texture = null,
-        float scale = 1.0f,
-        Rectangle? sourceRectangle = null
-    )
-        => new()
-        {
-            Texture = texture,
-            Color = Color.White,
-            Origin = sourceRectangle.HasValue
-                ? sourceRectangle.Value.Location.ToVector2() + sourceRectangle.Value.Size.ToVector2() / 2
-                : new Vector2(texture.Width / 2, texture.Height / 2),
-            ScaleOffset = scale,
-        };
+    public Appearance()
+        : this(1.0f) { }
+
+    public Appearance(float scale)
+    {
+        ScaleOffset = scale;
+        Color = Color.White;
+    }
+
+    public Appearance(Texture2D texture, float scale = 1.0f)
+        : this(scale)
+    {
+        Texture = texture;
+        Origin = texture.GetSize() / 2.0f;
+    }
 }

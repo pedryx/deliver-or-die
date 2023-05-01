@@ -20,4 +20,15 @@ internal struct Animation
     /// index of current frame.
     /// </summary>
     public int FrameIndex;
+
+    public Animation()
+    {
+        Frames = new List<AnimationFrame>();
+    }
+
+    public Animation(List<AnimationFrame> frames, float timePerFrame = 0.1f)
+    {
+        Frames = frames;
+        TimePerFrame = timePerFrame;
+    }
 }

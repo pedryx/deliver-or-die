@@ -1,15 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DeliverOrDie;
-internal class Statistics
+/// <summary>
+/// Contains statistics about game.
+/// </summary>
+internal class GameStatistics
 {
-    private readonly Dictionary<string, float> statistics = new()
-    {
-        { "deliveries made", 0.0f },
-        { "zombie killed", 0.0f },
-        { "play time", 0.0f }
-    };
+    private readonly Dictionary<Statistics, float> statistics = new();
 
-    public void Increment(string name, float value)
-        => statistics[name] += value;
+    public GameStatistics()
+    {
+        foreach (Statistics stat in Enum.GetValues(typeof(Statistics)))
+            statistics[stat] = 0.0f;
+    }
+
+    /// <summary>
+    /// Increment statistic.
+    /// </summary>
+    /// <param name="stat">Statistic to increment.</param>
+    /// <param name="value">by which amount to increment.</param>
+    public void Increment(Statistics stat, float value)
+        => statistics[stat] += value;
+}
+
+internal enum Statistics
+{
+    DeliveriesMade,
+    ZombiesKilled,
+    PlayTime,
 }

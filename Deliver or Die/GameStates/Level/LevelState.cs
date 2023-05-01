@@ -1,4 +1,5 @@
-﻿using DeliverOrDie.GameStates.UpgradeMenu;
+﻿using DeliverOrDie.Components;
+using DeliverOrDie.GameStates.UpgradeMenu;
 using DeliverOrDie.Systems;
 using DeliverOrDie.UI;
 using DeliverOrDie.UI.Elements;
@@ -7,7 +8,9 @@ using HypEcs;
 
 using Microsoft.Xna.Framework;
 
+using System;
 using System.Collections.Generic;
+using System.Transactions;
 
 namespace DeliverOrDie.GameStates.Level;
 /// <summary>
@@ -15,23 +18,37 @@ namespace DeliverOrDie.GameStates.Level;
 /// </summary>
 internal class LevelState : GameState
 {
+    /// <summary>
+    /// Time until delivery expires in seconds.
+    /// </summary>
     private const float deliveryTime = 2.0f * 60.0f;
 
+    /// <summary>
+    /// Contains all delivery spots where delivery quest could occur.
+    /// </summary>
     private readonly List<Entity> deliverySpots = new();
 
     private LevelFactory factory;
+    /// <summary>
+    /// Marker pointing towards current delivery quest location.
+    /// </summary>
     private DirectionMarker directionMarker;
+    /// <summary>
+    /// Timer which counts time until delivery expires.
+    /// </summary>
     private Timer timer;
 
-    public TimeToLiveSystem TimeToLiveSystem { get; private set; }
+    /// <summary>
+    /// index of current delivery spot quest location.
+    /// </summary>
     public int QuestDeliverySpotIndex { get; private set; }
     public Entity Player { get; private set; }
 
     public void CompleteDelivery()
     {
-        Game.Statistics.Increment("deliveries made", 1.0f);
+        Game.GameStatistics.Increment(Statistics.DeliveriesMade, 1.0f);
 
-        Enable = false;
+        Enabled = false;
         var upgradeMenuState = new UpgradeMenuState(this);
         upgradeMenuState.Initialize(Game);
         Game.AddGameState(upgradeMenuState);
@@ -46,9 +63,14 @@ internal class LevelState : GameState
         deliverySpots.Add(spot);
     }
 
+    public void GameOver()
+    {
+        // TODO: game over
+        throw new NotImplementedException();
+    }
+
     protected override void Initialize()
     {
-        TimeToLiveSystem = new TimeToLiveSystem(this);
         factory = new LevelFactory(this);
 
         CreateEntities();
@@ -56,19 +78,22 @@ internal class LevelState : GameState
         CreateUI();
 
         GenerateDeliveryQuest();
+
+        Camera.Target = Player;
+        Game.SoundManager["AmbientNatureOutside"].PlayLoop();
     }
 
     private void CreateSystems()
     {
         UpdateSystems
+            .Add(new TimeToLiveSystem(this))
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
-            .Add(new ZombieSpawningSystem(this, factory))
+            //.Add(new ZombieSpawningSystem(this, factory))
             .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
             .Add(new CollisionSystem(this))
             .Add(new AnimationSystem(this))
-            .Add(TimeToLiveSystem)
         ;
         RenderSystems
             .Add(new RenderSystem(this))
@@ -100,22 +125,18 @@ internal class LevelState : GameState
             Offset = new Vector2(Game.Resolution.X / 2.0f, 10.0f),
             Time = deliveryTime,
         };
-        timer.OnFinish += (sender, e) =>
-        {
-            // TODO: game over
-        };
+        timer.OnFinish += (sender, e) => GameOver();
         UILayer.AddElement(timer);
     }
 
     private void CreateEntities()
     {
         Player = factory.CreatePlayer();
-        WorldGenerator.Generate(this, factory);
-        factory.CreateZombie(new Vector2(0.0f, 500.0f));
+        CreateDeliverySpot(new Vector2(600.0f, 0.0f));
+        CreateDeliverySpot(new Vector2(-600.0f, 0.0f));
 
-        Camera.Target = Player;
-
-        Game.SoundManager["AmbientNatureOutside"].PlayLoop();
+        //WorldGenerator.Generate(this, factory);
+        factory.CreateZombie(new Vector2(0.0f, 600.0f));
     }
 
     private void GenerateDeliveryQuest(int lastSpotIndex = -1)
