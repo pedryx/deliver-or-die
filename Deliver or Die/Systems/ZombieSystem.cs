@@ -151,6 +151,14 @@ internal class ZombieSystem : GameSystem<Transform, Movement, Animation, ZombieB
             ));
             GameState.DestroyEntity(ecsWorld.GetComponent<Player>(player).EntityIndex);
         }
+        else
+        {
+            health.OnHit?.Invoke(this, new CollisionEventArgs
+            (
+                GameState.GetEntity(ecsWorld.GetComponent<Player>(player).EntityIndex),
+                GameState.GetEntity(components.Zombie.EntityIndex)
+            ));
+        }
     }
 
     /// <summary>
