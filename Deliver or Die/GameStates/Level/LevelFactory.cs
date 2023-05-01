@@ -233,10 +233,10 @@ internal class LevelFactory
             .Add(new Transform(position))
             .Add(new Appearance(textureManager[$"cloud{cloudIndex + 1}"], random.NextSingle(0.8f, 2.0f))
             {
-                Color = new Color(Color.Black, 0.1f),
+                Color = new Color(0.03f, 0.03f, 0.03f, 0.03f),
                 RotationOffset = random.NextAngle(),
             })
-            .Add(new Movement(random.NextSingle(80.0f, 200.0f), MathF.PI))
+            .Add(new Movement(random.NextSingle(40.0f, 80.0f), MathF.PI))
             .Add(new Cloud(entityIndex))
             .Add<Foreground>()
             .Id();

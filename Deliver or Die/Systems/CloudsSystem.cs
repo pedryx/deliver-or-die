@@ -9,7 +9,7 @@ using System;
 namespace DeliverOrDie.Systems;
 internal class CloudsSystem : GameSystem<Transform, Cloud>
 {
-    private const int cloudCount = 1_000;
+    private const int cloudCount = 50_000;
 
     private readonly LevelFactory factory;
     private readonly Random random;
