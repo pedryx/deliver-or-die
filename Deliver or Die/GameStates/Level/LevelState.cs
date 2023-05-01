@@ -47,6 +47,7 @@ internal class LevelState : GameState
 
     public void CompleteDelivery()
     {
+        Game.SoundManager["Jingle_Lose_00"].Play(0.5f);
         Game.GameStatistics.Increment(Statistics.DeliveriesMade, 1.0f);
 
         Enabled = false;
@@ -149,6 +150,9 @@ internal class LevelState : GameState
     private void CreateEntities()
     {
         Player = factory.CreatePlayer();
+        
+        //CreateDeliverySpot(new Vector2(-500.0f, 0.0f));
+        //CreateDeliverySpot(new Vector2(500.0f, 0.0f));
 
         WorldGenerator.Generate(this, factory);
     }
