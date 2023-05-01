@@ -20,4 +20,7 @@ internal static class RandomExtension
 
     public static float NextSingle(this Random random, float minValue, float maxValue)
         => (maxValue - minValue) * random.NextSingle() + minValue;
+
+    public static Vector2 NextUnitVector(this Random random)
+        => MathUtils.AngleToVector(NextAngle(random));
 }

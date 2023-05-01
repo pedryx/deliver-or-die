@@ -99,8 +99,9 @@ internal class GameState
 
     public void Initialize(LDGame game)
     {
-        Camera = new Camera(this);
         Game = game;
+
+        Camera = new Camera(this);
         UILayer = new UILayer(this);
         Initialize();
     }

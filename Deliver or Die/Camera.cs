@@ -1,8 +1,11 @@
 ﻿using DeliverOrDie.Components;
+using DeliverOrDie.Extensions;
 
 using HypEcs;
 
 using Microsoft.Xna.Framework;
+
+using System;
 
 namespace DeliverOrDie;
 /// <summary>
@@ -11,6 +14,12 @@ namespace DeliverOrDie;
 internal class Camera
 {
     private readonly GameState gameState;
+    private readonly Random random;
+
+    private float shakeElapsed;
+    private bool shakeActive;
+    private float shakeDuration;
+    private float shakeMagnitude;
 
     public Entity? Target;
 
@@ -21,14 +30,32 @@ internal class Camera
     public Camera(GameState gameState)
     {
         this.gameState = gameState;
+        random = gameState.Game.Random;
+    }
+
+    public void Shake(float duration, float magnitude)
+    {
+        shakeDuration = duration;
+        shakeMagnitude = magnitude;
+        shakeActive = true;
     }
 
     public void Update()
     {
-        if (Target == null)
-            return;
+        if (Target != null)
+            Position = gameState.ECSWorld.GetComponent<Transform>(Target.Value).Position;
 
-        Position = gameState.ECSWorld.GetComponent<Transform>(Target.Value).Position;
+        if (shakeActive)
+        {
+            Position += random.NextUnitVector() * shakeMagnitude;
+
+            shakeElapsed += gameState.Elapsed * gameState.Game.Speed;
+            if (shakeElapsed >= shakeDuration)
+            {
+                shakeElapsed = 0.0f;
+                shakeActive = false;
+            }
+        }
     }
 
     public Matrix GetTransformMatrix()

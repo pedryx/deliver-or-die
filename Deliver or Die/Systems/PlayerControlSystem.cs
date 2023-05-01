@@ -141,7 +141,9 @@ internal class PlayerControlSystem : GameSystem<Transform, Movement, Animation, 
                     if (animation.FrameIndex >= animation.Frames.Count)
                         animation.FrameIndex = 0;
                     player.Shooting = true;
+                    
                     GameState.Game.SoundManager["lmg_fire01"].Play(0.5f);
+                    GameState.Camera.Shake(0.1f, 2.0f);
 
                     float spawnDirectionAngle = transform.Rotation + bulletDirectionOffset;
                     Vector2 spawnDirection = new(MathF.Cos(spawnDirectionAngle), MathF.Sin(spawnDirectionAngle));
