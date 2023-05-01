@@ -11,6 +11,11 @@ internal class GameStatistics
 
     public GameStatistics()
     {
+        Clear();
+    }
+
+    public void Clear()
+    {
         foreach (Statistics stat in Enum.GetValues(typeof(Statistics)))
             statistics[stat] = 0.0f;
     }
@@ -22,6 +27,8 @@ internal class GameStatistics
     /// <param name="value">by which amount to increment.</param>
     public void Increment(Statistics stat, float value)
         => statistics[stat] += value;
+
+    public float this[Statistics stat] => statistics[stat];
 }
 
 internal enum Statistics

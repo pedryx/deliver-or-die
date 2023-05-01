@@ -15,7 +15,7 @@ internal class UpgradeMenuWindow : UIElement
     private const float maxHPUpgrade = 2.0f;
     private const float heal = 0.33f;
 
-    private const string title = "Pick an upgrade:";
+    private const string title = "Pick Upgrade";
     private const int rowSize = 6;
     private const int columnSize = 2;
 
@@ -41,14 +41,14 @@ internal class UpgradeMenuWindow : UIElement
         size = new Vector2(windowTexture.Width, windowTexture.Height) * image.Scale;
         AddChild(image);
 
-        SpriteFont font = Owner.GameState.Game.FontManager["Comic Sans;100"];
+        SpriteFont font = Owner.GameState.Game.FontManager["Comic Sans;85"];
         AddChild(new Label()
         {
             Font = font,
             Text = title,
             Color = Color.White,
             Origin = font.MeasureString(title) / 2.0f,
-            Offset = new Vector2(0, -280.0f),
+            Offset = new Vector2(0, -260.0f),
         });
 
         var damageButton = CreateButton("Triple_headshot", "damage", 0, 0);

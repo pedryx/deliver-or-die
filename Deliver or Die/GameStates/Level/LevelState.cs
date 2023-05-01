@@ -70,8 +70,10 @@ internal class LevelState : GameState
 
     public void GameOver()
     {
-        // TODO: game over
-        throw new NotImplementedException();
+        Enabled = false;
+        var gameOverState = new GameOverState();
+        gameOverState.Initialize(Game);
+        Game.AddGameState(gameOverState);
     }
 
     protected override void Initialize()
@@ -129,7 +131,7 @@ internal class LevelState : GameState
 
         timer = new Timer()
         {
-            Offset = new Vector2(Game.Resolution.X / 2.0f, 10.0f),
+            Offset = new Vector2(Game.Resolution.X / 2.0f, 0.0f),
             Time = deliveryTime,
         };
         timer.OnFinish += (sender, e) => GameOver();

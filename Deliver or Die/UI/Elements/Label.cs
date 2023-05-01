@@ -16,10 +16,26 @@ internal class Label : UIElement
     public SpriteEffects SpriteEffects;
     public float LayerDepth;
 
-    public override Vector2 Size => Font.MeasureString(Text) * Scale;
+    public override Vector2 Size => Font == null ? Vector2.Zero : Font.MeasureString(Text) * Scale;
+
+    public Label(float scale = 1.0f)
+    {
+        Scale = scale;
+    }
+
+    public Label(SpriteFont font, string text = "", float scale = 1.0f)
+        : this(scale)
+    {
+        Font = font;
+        Text = text;
+        Origin = font.MeasureString(Text) / 2.0f;
+    }
 
     public override void Draw(float elapsed, Vector2 position)
     {
+        if (Font == null)
+            return;
+
         Owner.GameState.Game.SpriteBatch.DrawString
         (
             Font,

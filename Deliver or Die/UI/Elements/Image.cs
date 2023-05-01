@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DeliverOrDie.Extensions;
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace DeliverOrDie.UI.Elements;
@@ -17,11 +19,26 @@ internal class Image : UIElement
     public float LayerDepth;
 
     public override Vector2 Size => (SourceRectangle == null
-        ? new Vector2(Texture.Width, Texture.Height)
+        ? Texture == null ? Vector2.Zero : new Vector2(Texture.Width, Texture.Height)
         : SourceRectangle.Value.Size.ToVector2()) * Scale;
+
+    public Image(float scale = 1.0f)
+    {
+        Scale = scale;
+    }
+
+    public Image(Texture2D texture, float scale = 1.0f)
+        : this(scale)
+    {
+        Texture = texture;
+        Origin = texture.GetSize() / 2.0f;
+    }
 
     public override void Draw(float elapsed, Vector2 position)
     {
+        if (Texture == null)
+            return;
+
         Owner.GameState.Game.SpriteBatch.Draw
         (
             Texture,
