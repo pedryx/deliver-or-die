@@ -6,7 +6,6 @@ using HypEcs;
 
 using Microsoft.Xna.Framework;
 
-using System;
 using System.Collections.Generic;
 
 namespace DeliverOrDie.GameStates.Level;
@@ -21,7 +20,7 @@ internal class LevelState : GameState
     /// <summary>
     /// Time until delivery expires in seconds.
     /// </summary>
-    private const float deliveryTime = 2.0f * 60.0f;
+    private const float deliveryTime = 3.0f * 60.0f;
 
     /// <summary>
     /// Contains all delivery spots where delivery quest could occur.
@@ -37,13 +36,13 @@ internal class LevelState : GameState
     /// Timer which counts time until delivery expires.
     /// </summary>
     private Timer timer;
-    private ZombieSpawningSystem zombieSpawningSystem;
 
     /// <summary>
     /// index of current delivery spot quest location.
     /// </summary>
     public int QuestDeliverySpotIndex { get; private set; }
     public Entity Player { get; private set; }
+    public ZombieSpawningSystem ZombieSpawningSystem { get; private set; }
 
     public void CompleteDelivery()
     {
@@ -58,9 +57,9 @@ internal class LevelState : GameState
         GenerateDeliveryQuest(QuestDeliverySpotIndex);
         timer.Time = deliveryTime;
 
-        zombieSpawningSystem.ZombieSpeed *= zombieSpeedDifficultyMultiplier;
-        zombieSpawningSystem.ZombieDamage *= zombieDamageDifficultyMultiplier;
-        zombieSpawningSystem.ZombieHealth += zombieHealthDifficultyUpgrade;
+        ZombieSpawningSystem.ZombieSpeed *= zombieSpeedDifficultyMultiplier;
+        ZombieSpawningSystem.ZombieDamage *= zombieDamageDifficultyMultiplier;
+        ZombieSpawningSystem.ZombieHealth += zombieHealthDifficultyUpgrade;
     }
 
     public void CreateDeliverySpot(Vector2 position)
@@ -94,19 +93,19 @@ internal class LevelState : GameState
 
     private void CreateSystems()
     {
-        zombieSpawningSystem = new ZombieSpawningSystem(this, factory);
+        ZombieSpawningSystem = new ZombieSpawningSystem(this, factory);
 
         UpdateSystems
             .Add(new TimeToLiveSystem(this))
             .Add(new CameraControlSystem(this))
             .Add(new PlayerControlSystem(this, factory))
-            .Add(zombieSpawningSystem)
+            .Add(ZombieSpawningSystem)
             .Add(new ZombieSystem(this, Player))
             .Add(new MovementSystem(this))
-            .Add(new CollisionSystem(this))
+            .Add(new CollisionSystem(this, WorldGenerator.WorldSize))
             .Add(new BorderCollisionSystem(this, WorldGenerator.WorldSize))
             .Add(new AnimationSystem(this))
-            .Add(new CloudsSystem(this, factory, WorldGenerator.WorldSize))
+            .Add(new CloudsSystem(this, factory))
         ;
         RenderSystems
             .Add(new RenderSystem(this))
@@ -151,8 +150,8 @@ internal class LevelState : GameState
     {
         Player = factory.CreatePlayer();
         
-        //CreateDeliverySpot(new Vector2(-500.0f, 0.0f));
-        //CreateDeliverySpot(new Vector2(500.0f, 0.0f));
+        // CreateDeliverySpot(new Vector2(-500.0f, 0.0f));
+        // CreateDeliverySpot(new Vector2(500.0f, 0.0f));
 
         WorldGenerator.Generate(this, factory);
     }

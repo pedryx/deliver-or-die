@@ -14,6 +14,8 @@ namespace DeliverOrDie.Systems;
 /// </summary>
 internal class ZombieSpawningSystem : GameSystem
 {
+    private const int maxZombies = 1_000;
+
     private readonly LevelFactory factory;
     private readonly Random random;
     private readonly Entity player;
@@ -44,6 +46,8 @@ internal class ZombieSpawningSystem : GameSystem
     /// </summary>
     public float ZombieHealth = 1.0f;
 
+    public int ZombieCount { get; private set; }
+
     public ZombieSpawningSystem(LevelState levelState, LevelFactory factory)
         : base(levelState)
     {
@@ -54,8 +58,16 @@ internal class ZombieSpawningSystem : GameSystem
         minPlayerSpawnDistance = levelState.Game.Resolution.X * 2.5f;
     }
 
+    public void ZombieKilled()
+    {
+        ZombieCount--;
+    }
+
     protected override void Update()
     {
+        if (ZombieCount >= maxZombies)
+            return;
+
         elapsed += GameState.Elapsed;
 
         Transform playerTransform = GameState.ECSWorld.GetComponent<Transform>(player);
@@ -73,6 +85,10 @@ internal class ZombieSpawningSystem : GameSystem
             while (Vector2.Distance(playerTransform.Position, position) <= minPlayerSpawnDistance);
 
             factory.CreateZombie(position, ZombieSpeed, ZombieDamage, ZombieHealth);
+            ZombieCount++;
+
+            if (ZombieCount >= maxZombies)
+                return;
         }
     }
 }

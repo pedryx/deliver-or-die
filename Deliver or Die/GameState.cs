@@ -2,13 +2,17 @@
 
 using HypEcs;
 
+using Microsoft.Xna.Framework;
+
 using System.Collections.Generic;
+
+using UltimateQuadTree;
 
 namespace DeliverOrDie;
 /// <summary>
 /// Represent "game screen".
 /// </summary>
-internal class GameState
+internal abstract class GameState
 {
     /// <summary>
     /// Contains tracked entities.
@@ -55,7 +59,6 @@ internal class GameState
     /// Systems used in draw call.
     /// </summary>
     protected SystemGroup RenderSystems { get; private set; } = new();
-
 
     /// <summary>
     /// Create entities and systems.

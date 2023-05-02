@@ -53,22 +53,25 @@ internal class RenderSystem : GameSystem
         spriteBatch.End();
 
         // render third batch
-        spriteBatch.Begin(transformMatrix: camera.GetTransformMatrix());
+        spriteBatch.Begin();
         thirdBatch.Run((count, transforms, appearances, foregrounds) =>
         {
             for (int i = 0; i < count; i++)
             {
-                Draw(ref transforms[i], ref appearances[i]);
+                Draw(ref transforms[i], ref appearances[i], false);
             }
         });
         spriteBatch.End();
     }
 
-    protected void Draw(ref Transform transform, ref Appearance appearance)
+    protected void Draw(ref Transform transform, ref Appearance appearance, bool clipping = true)
     {
-        float distance = Vector2.Distance(camera.Position, transform.Position + appearance.PositionOffset);
-        if (distance > (GameState.Game.Resolution.X / 2.0f) * (1.0f / camera.Scale) * 2.5f)
-            return;
+        if (clipping)
+        {
+            float distance = Vector2.Distance(camera.Position, transform.Position + appearance.PositionOffset);
+            if (distance > (GameState.Game.Resolution.X / 2.0f) * (1.0f / camera.Scale) * 2.5f)
+                return;
+        }
 
         spriteBatch.Draw
         (

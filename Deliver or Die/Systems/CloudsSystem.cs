@@ -9,35 +9,36 @@ using System;
 namespace DeliverOrDie.Systems;
 internal class CloudsSystem : GameSystem<Transform, Cloud>
 {
-    private const int cloudCount = 50_000;
+    private const float border = 700.0f;
+
+    private const int cloudCount = 400;
 
     private readonly LevelFactory factory;
     private readonly Random random;
-    private readonly Vector2 worldSize;
 
-    public CloudsSystem(GameState gameState, LevelFactory factory, Vector2 worldSize)
+    public CloudsSystem(GameState gameState, LevelFactory factory)
         : base(gameState)
     {
         this.factory = factory;
-        this.worldSize = worldSize;
 
         random = gameState.Game.Random;
 
         for (int i = 0; i < cloudCount; i++)
-            factory.CreateCloud(random.Nextvector2(worldSize) - worldSize / 2.0f);
+            factory.CreateCloud(random.Nextvector2(gameState.Game.Resolution + new Vector2(border * 2.0f))
+                - new Vector2(border));
     }
 
     protected override void Update(ref Transform transform, ref Cloud cloud)
     {
-        if (transform.Position.X < (-worldSize.X / 2.0f - 500.0f))
+        if (transform.Position.X < -border)
         {
             GameState.DestroyEntity(cloud.EntityIndex);
 
             factory.CreateCloud(new Vector2
             (
-                worldSize.X / 2.0f + 500.0f,
-                random.NextSingle(-worldSize.Y / 2.0f, worldSize.Y / 2.0f))
-            );
+                GameState.Game.Resolution.X + border,
+                random.NextSingle(-border, GameState.Game.Resolution.Y + border)
+            ));
         }
     }
 }

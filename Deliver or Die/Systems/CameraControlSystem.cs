@@ -18,7 +18,7 @@ internal class CameraControlSystem : GameSystem
     /// <summary>
     /// Maximum zoomed value.
     /// </summary>
-    private const float maxZoom = 1.0f;
+    private const float maxZoom = 0.9f;
 
     /// <summary>
     /// Camera which is being controlled.
@@ -34,6 +34,7 @@ internal class CameraControlSystem : GameSystem
         : base(gameState)
     {
         camera = gameState.Camera;
+        camera.Scale = (maxZoom - minZoom) / 2.0f + minZoom;
         lastMouseState = Mouse.GetState();
     }
 

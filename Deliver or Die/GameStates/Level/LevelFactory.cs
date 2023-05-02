@@ -118,7 +118,7 @@ internal class LevelFactory
             })
             .Add(new Player(entityIndex, 5)
             {
-                MoveSpeed = 500.0f,
+                MoveSpeed = 250.0f,
                 ReloadTime = 2.0f,
                 ShootingSpeed = 5.0f,
                 Damage = 1.0f,
@@ -188,6 +188,8 @@ internal class LevelFactory
 
                     CreateBloodSplat(currentPosition, direction, true);
                     soundManager["bigmonster_die"].Play(0.1f);
+
+                    levelState.ZombieSpawningSystem.ZombieKilled();
                 },
                 OnHit = (sender, e) =>
                 {

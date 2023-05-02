@@ -6,6 +6,10 @@ using HypEcs;
 
 using Microsoft.Xna.Framework;
 
+using System.Collections.Generic;
+
+using UltimateQuadTree;
+
 namespace DeliverOrDie.Systems;
 
 /// <summary>
@@ -15,65 +19,75 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
 {
     private readonly Query<Transform, Collider> query;
     private readonly World ecsWorld;
+    //private readonly HashSet<int> quadTreeEntities = new();
+    private readonly Vector2 worldSize;
 
-    public CollisionSystem(GameState gameState)
+    private QuadTree<Entity> quadTree;
+
+    public CollisionSystem(GameState gameState, Vector2 worldSize)
         : base(gameState)
     {
+        this.worldSize = worldSize;
         ecsWorld = gameState.ECSWorld;
         query = ecsWorld.Query<Transform, Collider>().Build();
     }
 
-    protected override void Update(ref Transform transformReference, ref Collider colliderReference)
+    protected override void PreUpdate()
     {
-        Transform transform = transformReference;
-        Collider collider = colliderReference;
+        quadTree = new QuadTree<Entity>(worldSize.X, worldSize.Y, new QuadTreeEntityBounds(ecsWorld));
 
         query.Run((count, transforms, colliders) =>
         {
             for (int i = 0; i < count; i++)
             {
-                if (collider.EntityIndex == colliders[i].EntityIndex)
-                    continue;
-
-                var components = new CollisionComponents()
-                {
-                    Transform1 = transform,
-                    Collider1 = collider,
-                    Transform2 = transforms[i],
-                    Collider2 = colliders[i],
-                };
-
-                HandleCollisions(components);
+                quadTree.Insert(GameState.GetEntity(colliders[i].EntityIndex));
             }
         });
     }
 
-    private void HandleCollisions(CollisionComponents components)
+    protected override void Update(ref Transform transformReference, ref Collider colliderReference)
     {
-        float distance = Vector2.Distance(components.Transform1.Position, components.Transform2.Position);
-        if (distance > components.Collider1.Radius + components.Collider2.Radius)
+        Entity entity1 = GameState.GetEntity(colliderReference.EntityIndex);
+
+        var entities = quadTree.GetNearestObjects(entity1);
+        foreach (var entity2 in entities)
+        {
+            HandleCollisions(entity1, entity2);
+        }
+    }
+
+    private void HandleCollisions(Entity entity1, Entity entity2)
+    {
+        ref Transform transform1 = ref ecsWorld.GetComponent<Transform>(entity1);
+        ref Collider collider1 = ref ecsWorld.GetComponent<Collider>(entity1);
+        ref Transform transform2 = ref ecsWorld.GetComponent<Transform>(entity2);
+        ref Collider collider2 = ref ecsWorld.GetComponent<Collider>(entity2);
+
+        if (collider1.EntityIndex == collider2.EntityIndex)
             return;
 
-        Entity entity1 = GameState.GetEntity(components.Collider1.EntityIndex);
-        Entity entity2 = GameState.GetEntity(components.Collider2.EntityIndex);
+        float distance = Vector2.Distance(transform1.Position, transform2.Position);
+        if (distance > collider1.Radius + collider2.Radius)
+            return;
 
         // reaction
-        if ((components.Collider1.ReactionLayer & components.Collider2.Layer) > 0)
-            components.Collider1.OnCollision?.Invoke(this, new CollisionEventArgs(entity1, entity2));
+        if ((collider1.ReactionLayer & collider2.Layer) > 0)
+            collider1.OnCollision?.Invoke(this, new CollisionEventArgs(entity1, entity2));
 
         // damage
-        if ((components.Collider1.DamageLayer & components.Collider2.Layer) > 0)
+        if ((collider1.DamageLayer & collider2.Layer) > 0)
         {
             if (ecsWorld.HasComponent<Health>(entity2))
             {
                 ref Health health2 = ref ecsWorld.GetComponent<Health>(entity2);
 
-                health2.Current -= components.Collider1.Damage;
+                health2.Current -= collider1.Damage;
 
                 if (health2.Current <= 0.0f)
                 {
                     health2.OnDead?.Invoke(this, new CollisionEventArgs(entity2, entity1));
-                    GameState.DestroyEntity(components.Collider2.EntityIndex);
+                    RemoveFromQuadTree(entity2, collider2.EntityIndex);
+                    GameState.DestroyEntity(collider2.EntityIndex);
                 }
                 else
                 {
@@ -83,16 +97,15 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
         }
 
         // impact
-        if ((components.Collider1.CollisionLayer & components.Collider2.Layer) > 0)
+        if ((collider1.CollisionLayer & collider2.Layer) > 0)
         {
             if (ecsWorld.HasComponent<Movement>(entity1))
             {
                 ref Movement movement = ref ecsWorld.GetComponent<Movement>(entity1);
-                ref Transform transform = ref ecsWorld.GetComponent<Transform>(entity1);
 
                 if (movement.Speed != 0.0f)
                 {
-                    Vector2 direction = components.Transform1.Position - components.Transform2.Position;
+                    Vector2 direction = transform1.Position - transform2.Position;
 
                     if (direction == Vector2.Zero)
                         direction = MathUtils.AngleToVector(GameState.Game.Random.NextAngle());
@@ -100,14 +113,23 @@ internal class CollisionSystem : GameSystem<Transform, Collider>
                     direction.Normalize();
 
 
-                    float offset = components.Collider1.Radius + components.Collider2.Radius - distance;
-                    transform.Position += direction * offset;
+                    float offset = collider1.Radius + collider2.Radius - distance;
+                    transform1.Position += direction * offset;
                 }
             }
 
-            if (components.Collider1.DestroyOnImpact)
-                GameState.DestroyEntity(components.Collider1.EntityIndex);
+            if (collider1.DestroyOnImpact)
+            {
+                RemoveFromQuadTree(entity1, collider1.EntityIndex);
+                GameState.DestroyEntity(collider1.EntityIndex);
+            }
         }
+    }
+
+    public void RemoveFromQuadTree(Entity entity, int index)
+    {
+        //quadTreeEntities.Remove(index);
+        quadTree.Remove(entity);
     }
 
     private struct CollisionComponents

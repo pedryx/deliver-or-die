@@ -17,10 +17,10 @@ internal class WorldGenerator
     /// Minimal distance between delivery spots.
     /// </summary>
     private const float minDeliverySpotsDistance = 5_000.0f;
-    private const int deliverySpotCount = 20;
+    private const int deliverySpotCount = 10;
 
     // TODO: border
-    public static readonly Vector2 WorldSize = new(30_720.0f);
+    public static readonly Vector2 WorldSize = new(20_480.0f);
 
     private static LevelState state;
     private static LevelFactory factory;
