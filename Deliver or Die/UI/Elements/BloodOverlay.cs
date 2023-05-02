@@ -30,12 +30,12 @@ internal class BloodOverlay : UIElement
         if (health.Current / health.Max <= 0.33f)
         {
             Visible = true;
-            fastBreathing.Play(0.2f, true);
+            fastBreathing.Play(0.1f, true);
         }
         else
         {
             Visible = false;
-            breating.Play(0.2f, true);
+            breating.Play(0.1f, true);
         }
 
         base.Update(elapsed, position);

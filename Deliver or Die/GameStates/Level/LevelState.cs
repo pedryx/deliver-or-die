@@ -88,7 +88,7 @@ internal class LevelState : GameState
 
         Camera.Target = Player;
         Game.SoundManager["AmbientNatureOutside"].PlayLoop();
-        Game.SoundManager["Iwan Gabovitch - Dark Ambience Loop"].PlayLoop(0.3f);
+        Game.SoundManager["Iwan Gabovitch - Dark Ambience Loop"].PlayLoop(0.2f);
     }
 
     private void CreateSystems()
