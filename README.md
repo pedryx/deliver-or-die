@@ -16,3 +16,6 @@ The game’s controls are simple and easy to master, with the WASD keys used for
 * More sounds and effects
 * More types of zombies
 * Minimap
+
+# Links
+* Ludum dare - https://ldjam.com/events/ludum-dare/53/deliver-or-die-2
