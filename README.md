@@ -19,3 +19,4 @@ The game’s controls are simple and easy to master, with the WASD keys used for
 
 # Links
 * Ludum dare - https://ldjam.com/events/ludum-dare/53/deliver-or-die-2
+* Itch.io - https://pedryx.itch.io/deliver-or-die
